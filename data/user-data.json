@@ -1,8 +1,12 @@
 {
   "version": "2.0",
-  "lastModified": "2025-11-29T19:22:47.080Z",
+  "lastModified": "2025-11-29T19:24:19.658Z",
   "progress": {},
-  "subjects": {},
+  "subjects": {
+    "calc2": {
+      "goal": "asdfas"
+    }
+  },
   "theme": "dark",
-  "currentView": "dashboard"
+  "currentView": "catalog"
 }
