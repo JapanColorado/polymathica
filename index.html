@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Path Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Learning Path Tracker</h1>
+        <p class="subtitle">Track your progress through 87 subjects across mathematics, sciences, and humanities</p>
+
+        <div class="legend">
+            <div class="legend-title">📖 How to Read This Tracker</div>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <span class="legend-icon">🔴</span>
+                    <span><strong>Required Prerequisites:</strong> Must complete first</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon">🟡</span>
+                    <span><strong>Recommended:</strong> Helpful but not essential</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon">🔵</span>
+                    <span><strong>Best Learned With:</strong> Study concurrently</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon">✅</span>
+                    <span><strong>Ready Badge:</strong> All required prereqs done</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon">🔒</span>
+                    <span><strong>Locked:</strong> Missing required prerequisites</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-icon">💚</span>
+                    <span><strong>Green glow:</strong> Ready to start now!</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total Subjects</h3>
+                <div class="number" id="totalSubjects">87</div>
+            </div>
+            <div class="stat-card">
+                <h3>Completed</h3>
+                <div class="number" id="completedCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>In Progress</h3>
+                <div class="number" id="inProgressCount">0</div>
+            </div>
+            <div class="stat-card ready">
+                <h3>Ready to Start</h3>
+                <div class="number" id="readyCount">10</div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%">0%</div>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search subjects...">
+            </div>
+            <div class="filter-group">
+                <select id="readinessFilter">
+                    <option value="all">All Readiness</option>
+                    <option value="ready">✅ Ready to Start</option>
+                    <option value="partial">⚠️ Partially Ready</option>
+                    <option value="locked">🔒 Locked</option>
+                </select>
+                <select id="statusFilter">
+                    <option value="all">All Status</option>
+                    <option value="not-started">Not Started</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                </select>
+                <select id="categoryFilter">
+                    <option value="all">All Categories</option>
+                    <option value="mathematics">Mathematics</option>
+                    <option value="physics">Physics</option>
+                    <option value="chemistry">Chemistry & Biochemistry</option>
+                    <option value="biology">Biology</option>
+                    <option value="cs">Computer Science</option>
+                    <option value="economics">Economics & Finance</option>
+                    <option value="psychology">Psychology</option>
+                    <option value="philosophy">Philosophy</option>
+                    <option value="social">Social Sciences</option>
+                    <option value="health">Health Sciences</option>
+                </select>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <span id="themeIcon">🌙</span>
+                <span id="themeText">Dark</span>
+            </button>
+            <button id="addSubjectBtn">+ Add Subject</button>
+            <button id="resetBtn">Reset All</button>
+            <button class="secondary" id="exportBtn">Export Progress</button>
+        </div>
+
+        <div id="content"></div>
+
+        <div id="notesModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title" id="modalTitle">Subject Notes</div>
+                    <button class="close-button" id="closeNotesBtn">&times;</button>
+                </div>
+                <div class="notes-tabs">
+                    <button class="notes-tab active" data-tab="edit">✏️ Edit</button>
+                    <button class="notes-tab" data-tab="preview">👁️ Preview</button>
+                </div>
+                <div class="notes-content">
+                    <textarea id="notesTextarea" class="notes-textarea" placeholder="Add your notes using Markdown..."></textarea>
+                    <div id="notesPreview" class="notes-preview"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="secondary" id="cancelNotesBtn">Cancel</button>
+                    <button id="saveNotesBtn">Save Notes</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="subjectModal" class="modal">
+            <div class="modal-content" style="max-width: 900px;">
+                <div class="modal-header">
+                    <div class="modal-title" id="subjectModalTitle">Add New Subject</div>
+                    <button class="close-button" id="closeSubjectBtn">&times;</button>
+                </div>
+                <div style="display: grid; gap: 15px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-primary);">Subject Name</label>
+                            <input type="text" id="subjectName" placeholder="e.g., Advanced Topology" style="width: 100%;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-primary);">Short Code</label>
+                            <input type="text" id="subjectId" placeholder="e.g., advtop" style="width: 100%;">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-primary);">Field/Category</label>
+                        <select id="subjectField" style="width: 100%;">
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Chemistry & Biochemistry">Chemistry & Biochemistry</option>
+                            <option value="Biology & Life Sciences">Biology & Life Sciences</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Economics & Finance">Economics & Finance</option>
+                            <option value="Psychology">Psychology</option>
+                            <option value="Philosophy">Philosophy</option>
+                            <option value="Social Sciences">Social Sciences</option>
+                            <option value="Health Sciences">Health Sciences</option>
+                            <option value="History & Humanities">History & Humanities</option>
+                            <option value="Languages">Languages</option>
+                            <option value="Interdisciplinary">Interdisciplinary</option>
+                            <option value="Other Subjects">Other Subjects</option>
+                        </select>
+                    </div>
+                    <div style="position: relative;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-primary);">Required Prerequisites (comma-separated codes)</label>
+                        <input type="text" id="subjectPrereq" placeholder="e.g., calc3, linalg" style="width: 100%;" autocomplete="off">
+                        <div id="prereqSuggestions" class="autocomplete-suggestions"></div>
+                    </div>
+                    <div style="position: relative;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-primary);">Recommended Prerequisites (comma-separated codes)</label>
+                        <input type="text" id="subjectSoft" placeholder="e.g., algebra, topology" style="width: 100%;" autocomplete="off">
+                        <div id="softSuggestions" class="autocomplete-suggestions"></div>
+                    </div>
+                    <div style="position: relative;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-primary);">Corequisites (comma-separated codes)</label>
+                        <input type="text" id="subjectCoreq" placeholder="e.g., quantum, relativity" style="width: 100%;" autocomplete="off">
+                        <div id="coreqSuggestions" class="autocomplete-suggestions"></div>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-primary);">AI-Generated Summary (optional)</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <button type="button" id="generateSummaryBtn" class="secondary" style="flex-shrink: 0;">🤖 Generate Summary</button>
+                            <span id="summaryStatus" style="font-size: 13px; color: var(--text-secondary);"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="secondary" id="cancelSubjectBtn">Cancel</button>
+                    <button class="secondary" id="deleteSubjectBtn" style="background: #e74c3c; display: none;">Delete Subject</button>
+                    <button id="saveSubjectBtn">Save Subject</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- External JavaScript Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+
+    <!-- Data Files -->
+    <script src="data/subjects.js"></script>
+    <script src="data/summaries.js"></script>
+
+    <!-- Main Application -->
+    <script src="app.js"></script>
+</body>
+</html>
