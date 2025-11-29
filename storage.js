@@ -277,9 +277,9 @@ class GitHubStorage {
 
 // Initialize storage
 let githubStorage;
-if (typeof CONFIG !== 'undefined' && typeof githubAuth !== 'undefined') {
+if (typeof CONFIG !== 'undefined' && typeof window.githubAuth !== 'undefined') {
     githubStorage = new GitHubStorage(
-        githubAuth,
+        window.githubAuth,
         CONFIG.github.repoOwner,
         CONFIG.github.repoName,
         CONFIG.github.branch
