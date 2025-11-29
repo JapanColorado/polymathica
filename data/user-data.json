@@ -1,10 +1,11 @@
 {
   "version": "2.0",
-  "lastModified": "2025-11-29T23:50:20.229Z",
+  "lastModified": "2025-11-29T23:52:33.779Z",
   "progress": {
-    "calc1": "partial",
+    "calc1": "complete",
     "calc2": "empty",
-    "calc3": "partial"
+    "calc3": "partial",
+    "discrete": "partial"
   },
   "subjects": {
     "calc2": {
