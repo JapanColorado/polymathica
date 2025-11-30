@@ -60,15 +60,24 @@ function saveProgress() {
 async function loadPublicDataFromGitHub() {
     try {
         console.log('[App] Loading public data from GitHub...');
-        const rawUrl = `https://raw.githubusercontent.com/${CONFIG.github.repoOwner}/${CONFIG.github.repoName}/${CONFIG.github.branch}/data/user-data.json`;
+        // Use GitHub API to avoid raw URL caching issues
+        const apiUrl = `https://api.github.com/repos/${CONFIG.github.repoOwner}/${CONFIG.github.repoName}/contents/data/user-data.json`;
 
-        const response = await fetch(rawUrl);
+        const response = await fetch(apiUrl, {
+            headers: {
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+
         if (!response.ok) {
             console.log('[App] No public data file found');
             return false;
         }
 
-        const userData = await response.json();
+        const fileData = await response.json();
+        // Decode base64 content
+        const content = atob(fileData.content.replace(/\n/g, ''));
+        const userData = JSON.parse(content);
 
         // Apply user data
         if (userData.progress) {
