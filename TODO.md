@@ -1,8 +1,5 @@
 # TODO
 
-- Brainstorm with Claude a way to host on Github Pages or something similar, with a non-editable, less-detailed view I can share with other people and a view for me that it how it is now, ie. editable.
-  - Likely need to rework data storage, especially with user-editable subjects.
-  - I want t
 - Add buttons should be small, inline and to the right of the Resources/Projects buttons in the subject expanded view
 - The expanded view should have the following:
   - Subject Name
@@ -33,3 +30,5 @@
 - Fix resources being unaddable in projects
   - Resource adding modal appears below project modal
   - Resources don't get assigned to projects correctly
+- Brainstorm with Claude a way to host on Github Pages or something similar, with a non-editable, less-detailed view I can share with other people and a view for me that it how it is now, ie. editable.
+  - Likely need to rework data storage, especially with user-editable subjects.

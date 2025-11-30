@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Polymathica is a web-based learning tracker application designed to help users organize and track their progress across multiple subjects, fields, and learning projects. The application provides a hierarchical structure for managing learning goals, resources, projects, and notes.
+Polymathica is a web-based learning tracker application designed to help users organize and track their progress across multiple subjects, fields, and learning projects. The application is hosted on GitHub Pages and provides both public read-only viewing and authenticated owner editing, with cross-device sync via GitHub.
 
 ## Architecture
 
@@ -11,125 +11,280 @@ Polymathica is a web-based learning tracker application designed to help users o
 ```text
 learning-tracker/
 ├── index.html          # Main HTML structure with modals
-├── app.js              # Core application logic (~750 lines)
+├── app.js              # Core application logic (~1080 lines)
 ├── styles.css          # Complete styling (dark/light theme support)
+├── auth.js             # GitHub authentication handler (Personal Access Tokens)
+├── storage.js          # GitHub API storage adapter for data sync
+├── config.js           # Public configuration (repo owner, OAuth client ID)
+├── callback.html       # OAuth callback page (guides PAT setup)
 ├── data/
 │   ├── subjects.js     # Default subject catalog (Mathematics, Physics, etc.)
-│   └── summaries.js    # Subject summaries (reserved for future use)
-└── CLAUDE.md          # This file
+│   ├── summaries.js    # Subject summaries (reserved for future use)
+│   └── user-data.json  # User's personal data (synced via GitHub)
+├── CLAUDE.md           # This file
+├── README.md           # User-facing documentation
+└── TODO.md             # Feature wishlist and done items
 ```
 
 ### Technology Stack
 
 - **Pure Vanilla JavaScript** - No frameworks
-- **LocalStorage** - Data persistence
-- **Marked.js** - Markdown rendering for notepads
+- **GitHub Pages** - Static site hosting
+- **GitHub API** - Data storage and synchronization
+- **Personal Access Tokens** - Authentication (simpler than full OAuth for static sites)
+- **LocalStorage** - Offline cache and fallback
 - **CSS Custom Properties** - Theme support
+
+### Deployment
+
+- **Hosting**: GitHub Pages at `https://username.github.io/learning-tracker/`
+- **Data Storage**: GitHub repository file `data/user-data.json`
+- **Public Access**: Anyone can view read-only version
+- **Owner Access**: Repository owner can edit after authentication
 
 ## Data Model
 
-### Data Structure
+### Subject Catalog Structure
 
-The application uses the following data hierarchy:
+The default subject catalog is defined in `data/subjects.js`:
 
 ```javascript
 subjects = {
   "Tier Name": {
-    category: "string",
+    category: "string",         // e.g., "stem", "humanities"
     subjects: [
       {
         id: "string",           // Unique identifier
         name: "string",         // Display name
-        goal: "string",         // Optional learning goal
         prereq: ["id"],         // Required prerequisites
         coreq: ["id"],          // Co-requisites
-        soft: ["id"],           // Soft dependencies
-        resources: [            // Learning resources
-          {
-            type: "link",       // "link" or "text"
-            value: "string",    // Display text
-            url: "string"       // Optional URL if type=link
-          }
-        ],
-        projects: [             // Nested projects
-          {
-            id: "string",
-            name: "string",
-            goal: "string",     // Required for projects
-            resources: [],      // Same structure as subject resources
-            notepad: "string",  // Markdown notes
-            status: "string"    // "not-started", "in-progress", "completed"
-          }
-        ],
-        notepad: "string"       // Markdown notes for subject
+        soft: ["id"]            // Soft dependencies
       }
     ]
   }
 }
 ```
 
+### User Data Structure
+
+User-specific data is stored in `data/user-data.json` and synced via GitHub:
+
+```javascript
+{
+  "version": "2.0",
+  "lastModified": "2025-11-30T02:14:32.387Z",
+  "progress": {
+    "subject-id": "partial",    // "empty", "partial", or "complete"
+    "subject-id-2": "complete"
+  },
+  "subjects": {
+    "subject-id": {
+      "goal": "User's personal goal",
+      "resources": [
+        {
+          "type": "link",       // "link" or "text"
+          "value": "Resource title",
+          "url": "https://..."  // Optional URL if type=link
+        }
+      ],
+      "projects": [
+        {
+          "id": "unique-id",
+          "name": "Project name",
+          "goal": "Project goal (required)",
+          "resources": [],      // Same structure as subject resources
+          "status": "not-started" // "not-started", "in-progress", "completed"
+        }
+      ]
+    }
+  },
+  "theme": "dark",              // "light" or "dark"
+  "currentView": "catalog"      // "dashboard" or "catalog"
+}
+```
+
+**Note**: Notepad functionality was removed for privacy reasons. User data is public in the repository.
+
 ### Progress States
 
 - `empty` - Not started (☐)
-- `partial` - In progress (☑ with line)
-- `complete` - Completed (☒ with checkmark)
+- `partial` - In progress (☑)
+- `complete` - Completed (☒)
 
 ### LocalStorage Keys
 
-- `subjects` - Subject data structure
+- `subjects` - Local copy of merged subject data
 - `subjectProgress` - Map of subject IDs to progress states
 - `theme` - "light" or "dark"
 - `currentView` - "dashboard" or "catalog"
+- `github_token` - Stored authentication token
+- `github_username` - Authenticated user's GitHub username
+- `github_user_data` - Cached copy of user data for offline access
+
+## Authentication & Sync System
+
+### Authentication Flow
+
+The app uses **Personal Access Tokens** instead of full OAuth for simplicity:
+
+1. User clicks "Sign In" button
+2. Modal prompts for GitHub Personal Access Token
+3. App validates token via GitHub API (`/user` endpoint)
+4. Checks if authenticated user is repository owner
+5. Stores token in localStorage
+
+**Why Personal Access Tokens?**
+- Full OAuth requires a server to exchange codes for tokens
+- PATs work perfectly for static sites
+- Users can easily create and manage tokens in GitHub settings
+
+### View Modes
+
+The app operates in two distinct modes:
+
+#### Public Mode (`viewMode === 'public'`)
+- **Trigger**: No authentication or non-owner authentication
+- **Data Source**: `https://username.github.io/learning-tracker/data/user-data.json`
+- **Features**:
+  - Read-only view of all subjects, progress, goals, resources, projects
+  - Can click into subjects and projects to view details
+  - All edit controls hidden (buttons, inputs disabled)
+  - Shows public view banner with fork link
+  - Progress checkboxes disabled
+  - Dashboard and Catalog views available
+
+#### Owner Mode (`viewMode === 'owner'`)
+- **Trigger**: Authenticated as repository owner
+- **Data Source**: GitHub API with read/write access
+- **Features**:
+  - Full edit access to all data
+  - Can modify goals, add/remove resources, create/edit/delete projects
+  - Progress tracking with clickable checkboxes
+  - Auto-sync every 5 minutes (configurable)
+  - Manual sync via sync status indicator
+  - Dashboard and Catalog views with full functionality
+
+### Data Synchronization
+
+**Loading Data (Public Mode)**:
+```javascript
+async function loadPublicDataFromGitHub() {
+  // Fetches from GitHub Pages URL with cache-busting
+  const pagesUrl = `https://${repoOwner}.github.io/${repoName}/data/user-data.json?t=${Date.now()}`;
+  const userData = await fetch(pagesUrl).then(r => r.json());
+  // Merges with default catalog
+  // Renders public read-only view
+}
+```
+
+**Loading Data (Owner Mode)**:
+```javascript
+async function loadDataFromGitHub() {
+  // Uses GitHub API with authentication
+  const userData = await githubStorage.loadUserData();
+  // Merges customizations with default catalog
+  // Enables full edit mode
+}
+```
+
+**Saving Data (Owner Mode Only)**:
+```javascript
+async function saveDataToGitHub() {
+  // Extracts only user customizations
+  const userData = {
+    version: '2.0',
+    lastModified: new Date().toISOString(),
+    progress: subjectProgress,
+    subjects: extractUserCustomizations(),
+    theme: currentTheme,
+    currentView: currentView
+  };
+
+  // Saves to GitHub via API (creates commit)
+  await githubStorage.saveUserData(userData);
+
+  // Also caches in localStorage
+}
+```
+
+**Auto-Sync**:
+- Runs every 5 minutes when authenticated
+- Only syncs if there are unsaved changes
+- Sync on page unload (beforeunload event)
+- Manual sync available via sync status click
+
+### GitHub API Storage Adapter
+
+**Key Methods** (`storage.js`):
+
+- `loadUserData()` - Loads from GitHub, falls back to localStorage
+- `saveUserData(data)` - Commits changes to GitHub, updates cache
+- `sync()` - Pulls latest, merges local changes, pushes if needed
+- `startAutoSync()` - Begins 5-minute interval sync
+- `getSyncStatus()` - Returns sync state (offline/dirty/synced)
+
+**Conflict Resolution**: Currently uses last-write-wins based on `lastModified` timestamp.
 
 ## Key Features
 
-### 1. Dashboard View
+### 1. Dashboard View (Owner & Public)
 
 - **Current Section** - Shows subjects with `partial` progress
 - **Completed Section** - Shows subjects with `complete` progress
-- Click subjects to open detail modal
+- Click subjects to open detail modal (read-only in public mode)
 
-### 2. Catalog View
+### 2. Catalog View (Owner & Public)
 
 - Organized by tiers (Mathematics, Physics, Chemistry, etc.)
 - Collapsible tier headers
 - Filter by search, status, and category
 - Each subject card shows:
   - Title
-  - Goal (if set)
+  - Goal (if set by owner)
   - Resources (with clickable links)
   - Projects (if any)
-  - Progress checkbox (top right)
+  - Progress checkbox (disabled in public mode)
   - Dependencies
 
 ### 3. Subject Detail Modal
 
-Opened by clicking on a subject card. Contains:
-- **Goal** - Optional text area
+**Owner Mode**:
+- **Goal** - Editable text area
 - **Resources** - List with add/remove functionality
 - **Projects** - List with add/edit/delete functionality
-- **Notepad** - Markdown editor with live preview
+- **Save/Cancel** buttons visible
+
+**Public Mode**:
+- **Goal** - Read-only display
+- **Resources** - View-only list (no delete buttons)
+- **Projects** - Clickable to view (no edit/delete buttons)
+- **All edit controls hidden**
 
 ### 4. Project Detail Modal
 
-Opened when adding/editing a project. Contains:
-- **Name** - Required text field
-- **Goal** - Required text area
-- **Resources** - Same as subject resources
-- **Notepad** - Markdown editor with preview
+**Owner Mode**:
+- **Name** - Editable text field
+- **Goal** - Editable text area (required)
+- **Resources** - List with add/remove functionality
+- **Save/Cancel/Delete** buttons visible
 
-### 5. Resource Modal
+**Public Mode**:
+- **Name** - Read-only display
+- **Goal** - Read-only display
+- **Resources** - View-only list
+- **All edit controls hidden**
 
-Simple modal for adding resources:
+### 5. Resource Modal (Owner Mode Only)
+
 - **Title/Description** - Required
 - **Link** - Optional URL
   - If provided, resource becomes clickable
   - If not, displays as plain text
 
-### 6. Progress Tracking
+### 6. Progress Tracking (Owner Mode Only)
 
 - Click checkbox on subject card to cycle: empty → partial → complete
-- Progress persists in localStorage
+- Progress syncs to GitHub automatically
 - Dashboard automatically categorizes by progress
 
 ### 7. Dependencies & Prerequisites
@@ -137,39 +292,82 @@ Simple modal for adding resources:
 - `prereq` - Must complete before subject is ready
 - `coreq` - Should study simultaneously
 - `soft` - Helpful but not required
-- Visual indicators for locked subjects
+- Visual indicators for locked subjects (dimmed if prerequisites not met)
 
 ## Important Functions
 
+### Authentication & Sync (`auth.js`, `storage.js`, `app.js`)
+
+#### Authentication
+- `GitHubAuth.setToken(token)` - Sets and validates Personal Access Token
+- `GitHubAuth.validateToken()` - Verifies token with GitHub API
+- `GitHubAuth.isOwner()` - Checks if user is repository owner
+- `GitHubAuth.logout()` - Clears auth data and reloads
+
+#### Data Loading
+- `loadPublicDataFromGitHub()` - Loads public data for read-only view
+- `loadDataFromGitHub()` - Loads data via GitHub API (owner mode)
+- `loadAllData()` - Legacy localStorage loading
+
+#### Data Saving
+- `saveDataToGitHub()` - Commits changes to GitHub (owner only)
+- `saveSubjects()` - Saves to localStorage cache
+- `saveProgress()` - Saves progress to localStorage cache
+
+#### Sync Management
+- `GitHubStorage.sync()` - Manual sync trigger
+- `GitHubStorage.startAutoSync()` - Begins 5-minute interval
+- `GitHubStorage.getSyncStatus()` - Returns sync state
+- `updateSyncStatus()` - Updates UI sync indicator
+
+### View Mode Management
+
+- `updateViewMode()` - Determines and sets view mode (public/owner)
+- `updateAuthButton()` - Updates sign-in button state
+- `openAuthModal()` - Shows token input modal
+- `saveToken()` - Validates and saves authentication token
+
 ### Data Management
 
-- `loadAllData()` - Loads subjects and progress from localStorage
-- `saveSubjects()` - Persists subjects to localStorage
-- `saveProgress()` - Persists progress to localStorage
+- `findSubject(subjectId)` - Locates subject in catalog
+- `findSubjectAndTier(subjectId)` - Returns subject with tier context
 
 ### Rendering
 
 - `render()` - Main render function (dashboard or catalog view)
-- `renderSubjectCard(subject)` - Renders individual subject card
+- `renderSubjectCard(subject)` - Renders card with mode awareness
+  - Shows edit controls only in owner mode
+  - Makes cards clickable in public mode
 - `renderTier(tierName, tierData)` - Renders tier with subjects
-- `renderResourcesList(resources, containerId, type)` - Renders resource list in modals
+- `renderResourcesList(resources, containerId, type)` - Mode-aware resource rendering
+- `renderProjectsList(projects)` - Mode-aware project rendering
 
 ### Modals
 
-- `openSubjectDetail(subjectId)` - Opens subject detail modal
-- `saveSubjectDetail()` - Saves changes from subject modal
-- `closeSubjectDetail()` - Closes subject modal
-- `addProject()` - Opens project modal in "add" mode
-- `editProject(projectIndex)` - Opens project modal in "edit" mode
-- `saveProjectDetail()` - Handles both add and edit for projects
-- `addResource(type)` - Opens resource modal ('subject' or 'project')
-- `saveResource()` - Saves resource to appropriate context
+#### Subject Detail
+- `openSubjectDetail(subjectId, event)` - Opens modal with mode awareness
+  - Owner mode: All controls enabled
+  - Public mode: Read-only, no edit buttons
+- `saveSubjectDetail()` - Saves changes (owner only)
+- `closeSubjectDetail()` - Closes modal
+
+#### Project Detail
+- `addProject()` - Creates new project (owner only)
+- `editProject(projectIndex, event)` - Opens project in edit mode (owner only)
+- `viewProject(projectIndex, event)` - Opens project in read-only mode (public)
+- `saveProjectDetail()` - Saves project changes (owner only)
+- `deleteCurrentProject()` - Deletes project (owner only)
+
+#### Resource Management
+- `addResource(type)` - Opens resource modal (owner only)
+- `saveResource()` - Saves resource to subject or project
+- `removeResource(index, type)` - Removes resource (owner only)
 
 ### Progress & State
 
-- `getSubjectProgress(id)` - Returns 'empty', 'partial', or 'complete'
-- `setSubjectProgress(id, progress)` - Sets progress state
-- `cycleProgress(id, event)` - Cycles through progress states
+- `getSubjectProgress(id)` - Returns progress state
+- `setSubjectProgress(id, progress)` - Sets progress and syncs
+- `cycleProgress(id, event)` - Cycles through states (owner only)
 - `calculateReadiness(subject)` - Determines if subject is ready/locked
 
 ### View Management
@@ -179,36 +377,48 @@ Simple modal for adding resources:
 
 ## Recent Major Changes
 
-### Refactoring from v1 to v2
+### v2.0 - GitHub Integration & Public Viewing
 
-1. **Removed expandable/collapsible subject cards**
-   - Subject content now always visible
-   - Simplified rendering logic
-   - Cleaned up unused functions: `toggleSubjectExpanded`, `isSubjectExpanded`, `toggleProjectExpanded`, `isProjectExpanded`
+1. **GitHub Pages Hosting**
+   - Migrated from local-only to GitHub Pages
+   - Public URL: `https://username.github.io/learning-tracker/`
 
-2. **Updated UI structure**
-   - Progress checkbox positioned in top right
-   - No expand arrow or ID shown on cards
-   - Cleaner, simpler card design
+2. **Authentication System**
+   - Implemented Personal Access Token authentication
+   - Owner verification via GitHub API
+   - Token stored in localStorage
 
-3. **Replaced prompt/alert dialogs with proper modals**
-   - Resource modal for adding resources
-   - Project modal used for both add and edit
-   - Better UX with form validation
+3. **Data Storage Migration**
+   - Moved from localStorage-only to GitHub API storage
+   - User data stored in `data/user-data.json`
+   - Automatic cross-device sync
+   - LocalStorage as offline cache/fallback
 
-4. **Improved resource handling**
-   - Resources have type (link/text) and optional URL
-   - Links are clickable when displayed
-   - Can add resources to new projects before saving (uses `tempProjectResources`)
+4. **View Mode System**
+   - Public mode: Read-only viewing for anyone
+   - Owner mode: Full edit access for repository owner
+   - Mode-aware rendering throughout app
 
-5. **Progress states**
-   - Uses: "empty", "partial", "complete"
-   - Simple three-state system
+5. **Read-Only Modal Support**
+   - Public viewers can click into subjects/projects
+   - All forms disabled, edit buttons hidden
+   - Preserves viewing experience without edit access
 
-6. **Theme system**
-   - Fixed icon reversal: ☀️ for light mode, 🌙 for dark mode
-   - Uses CSS custom properties for theming
-   - Persists theme preference
+6. **Removed Notepad Functionality**
+   - Notepads removed entirely for privacy
+   - User data is public in repository
+   - Prevents accidental exposure of private notes
+
+7. **Auto-Sync System**
+   - 5-minute interval sync when authenticated
+   - Sync on page unload
+   - Manual sync via status indicator
+   - Sync status display (synced/dirty/offline)
+
+8. **Cache-Busting for Public Data**
+   - Uses timestamp query parameter
+   - Fetches from GitHub Pages URL (not raw CDN)
+   - Ensures fresh data loads for public viewers
 
 ## CSS Architecture
 
@@ -223,6 +433,7 @@ Simple modal for adding resources:
 - `.progress-checkbox` - Styled checkbox
   - Absolute positioned (top: 15px, right: 15px)
   - Three states via pseudo-elements
+  - `pointer-events: none` in public mode
 
 - `.modal` - Modal container
   - `.modal.active` - Visible modal
@@ -230,6 +441,12 @@ Simple modal for adding resources:
 
 - `.tier` - Tier container
   - `.tier.collapsed` - Hidden tier content
+
+- `.auth-controls` - Authentication UI
+  - `.auth-button` - Sign in/out button
+  - `.sync-status` - Sync indicator (hidden when not authenticated)
+
+- `.public-view-banner` - Banner shown in public mode
 
 ### Theme Variables
 
@@ -247,14 +464,32 @@ Functions used in inline `onclick` handlers must be exposed on `window`:
 ```javascript
 window.cycleProgress = cycleProgress;
 window.openSubjectDetail = openSubjectDetail;
-// etc.
+window.editProject = editProject;
+window.viewProject = viewProject;  // New for public mode
+window.removeProject = removeProject;
+window.removeResource = removeResource;
+window.switchView = switchView;
+window.toggleTier = toggleTier;
 ```
 
 ### Modal Pattern
 
-1. Open: Set form values, `modal.classList.add('active')`
-2. Save: Validate, update data, `saveSubjects()`, close modal, re-render
-3. Close: `modal.classList.remove('active')`, clear editing state
+1. **Open**: Set form values, configure for mode, `modal.classList.add('active')`
+2. **Save**: Validate, update data, sync to GitHub (if owner), close modal, re-render
+3. **Close**: `modal.classList.remove('active')`, clear editing state
+
+### View Mode Checks
+
+Throughout the codebase:
+```javascript
+const isPublicMode = viewMode === 'public';
+if (isPublicMode) {
+  // Disable edit controls
+  // Make read-only
+} else {
+  // Enable full functionality
+}
+```
 
 ### Resource Context
 
@@ -262,113 +497,198 @@ window.openSubjectDetail = openSubjectDetail;
 - `tempProjectResources` holds resources for new (unsaved) projects
 - Cleared when project is saved or modal closed
 
+## Configuration
+
+### config.js
+
+```javascript
+const CONFIG = {
+  github: {
+    clientId: 'Ov23limAHgxWKUF6JeG8',  // OAuth Client ID (not used currently)
+    repoOwner: 'JapanColorado',         // Repository owner
+    repoName: 'learning-tracker',       // Repository name
+    branch: 'main'                      // Branch name
+  },
+  app: {
+    autoSyncInterval: 5 * 60 * 1000,   // 5 minutes
+    syncOnUnload: true,                 // Sync when leaving page
+    dataPath: 'data/user-data.json',   // Path to user data file
+    viewModes: {
+      PUBLIC: 'public',
+      OWNER: 'owner'
+    }
+  },
+  features: {
+    enableAutoSync: true                // Enable 5-minute auto-sync
+  }
+};
+```
+
 ## Testing & Debugging
 
 ### Common Issues
 
-1. **LocalStorage conflicts** - Clear localStorage if data structure changes
-2. **Modal not showing** - Check if `.active` class is added
-3. **Functions not accessible** - Ensure exposed on `window` object
-4. **Progress not saving** - Check `saveProgress()` is called after state change
+1. **Public view shows stale data**
+   - GitHub Pages CDN may cache files
+   - Hard refresh (Ctrl+Shift+R)
+   - Wait 1-2 minutes for GitHub Pages to update
+
+2. **Token authentication fails**
+   - Verify token has 'repo' scope
+   - Check token hasn't expired
+   - Clear localStorage and try again
+
+3. **Sync not working**
+   - Check console for errors
+   - Verify authentication
+   - Check GitHub API rate limits (5000/hour when authenticated)
+
+4. **Modal not showing**
+   - Check if `.active` class is added
+   - Verify modal HTML exists
+
+5. **Functions not accessible**
+   - Ensure exposed on `window` object
+   - Check browser console for errors
 
 ### Debug Helpers
 
-The codebase includes console.log statements in key functions (can be removed for production):
+Console.log statements throughout:
 - `[Init]` - Initialization process
-- `[Render]` - Rendering process
-- `[Load]` - Data loading
+- `[App]` - Application logic
+- `[Storage]` - GitHub storage operations
+- Response status logs for debugging fetch issues
 
 ## Development Guidelines
 
 ### Adding New Features
 
-1. **New modal**: Add HTML structure in index.html, create open/close/save functions
-2. **New data field**: Update data model, update save/load functions
-3. **New view**: Add render logic in `render()`, add navigation
-4. **New filter**: Update `applyFilters()` function
+1. **New modal**:
+   - Add HTML structure in index.html
+   - Create open/close/save functions
+   - Add mode awareness (public vs owner)
+   - Update global window exports if needed
+
+2. **New data field**:
+   - Update user-data.json structure
+   - Update save/load functions
+   - Update UI rendering
+   - Test with existing data
+
+3. **New view**:
+   - Add render logic in `render()`
+   - Add navigation
+   - Ensure works in both modes
+
+4. **New filter**:
+   - Update `applyFilters()` function
+   - Add UI controls
 
 ### Code Style
 
 - Use descriptive function names
 - Keep functions focused and small
-- Comment complex logic
+- Comment mode-specific logic clearly
 - Update this file when making architectural changes
 
 ### Data Changes
 
 When modifying the data structure:
-1. Update the data model in defaultSubjects
-2. Test thoroughly with existing data
-3. Consider if breaking changes require clearing localStorage
-4. Update documentation (CLAUDE.md and README.md)
+1. Update the data model in `data/user-data.json`
+2. Update save/load functions
+3. Test with existing data
+4. Consider migration path for existing users
+5. Update documentation (CLAUDE.md and README.md)
+
+## Security Considerations
+
+### Token Storage
+- Stored in localStorage (cleared on logout)
+- Never committed to repository
+- Token only validates on client side
+- Consider token expiration handling
+
+### Data Privacy
+- User data file is public in repository
+- Do not store sensitive information
+- Notepads removed to prevent accidental exposure
+- Consider private repository for sensitive tracking
+
+### API Rate Limits
+- Unauthenticated: 60 requests/hour
+- Authenticated: 5000 requests/hour
+- Auto-sync respects limits (5-minute interval)
+- Manual sync available
 
 ## Future Considerations
 
 ### Potential Improvements
 
-1. **Export/Import** - Allow users to backup/restore data
-2. **Statistics** - More detailed progress tracking and analytics
-3. **Search** - More powerful search with fuzzy matching
-4. **Tagging** - Add tags to subjects for better organization
-5. **Progress History** - Track progress over time
-6. **Multiple Catalogs** - Support different learning paths
-7. **Collaboration** - Share subjects/resources with others
-8. **Mobile Optimization** - Better responsive design
-9. **Offline PWA** - Service worker for offline access
-10. **Undo/Redo** - Action history for mistake recovery
+1. **Export/Import** - Backup/restore functionality
+2. **Conflict Resolution** - Better merge strategies
+3. **Offline PWA** - Service worker for offline access
+4. **Mobile Optimization** - Better responsive design
+5. **Statistics** - Detailed progress analytics
+6. **Search** - Fuzzy matching and advanced search
+7. **Private Projects** - Toggle project visibility
+8. **Multiple Catalogs** - Support different learning paths
+9. **Collaboration** - Share subjects/resources
+10. **Undo/Redo** - Action history
 
 ### Architecture Improvements
 
-1. **Modularization** - Split app.js into modules
-2. **State Management** - More structured state handling
-3. **Event Bus** - Decouple components with event system
-4. **Testing** - Add unit and integration tests
-5. **Build Process** - Minification and optimization
+1. **Modularization** - Split app.js into ES modules
+2. **State Management** - Centralized state handling
+3. **Testing** - Unit and integration tests
+4. **Build Process** - Minification and optimization
+5. **TypeScript** - Type safety
 
 ## Quick Start Guide
 
-### For Continuing Development
+### For Repository Owner
 
-1. **Read this file completely** - Understand the architecture
-2. **Review data model** - Understanding the data structure is key
-3. **Check modal patterns** - Most features use the modal pattern
-4. **Test thoroughly** - Changes to data model need careful testing
-5. **Update CLAUDE.md** - Document significant changes here
+1. **Initial Setup**:
+   - Fork or use this repository
+   - Enable GitHub Pages (Settings → Pages → Deploy from `main`)
+   - Update `config.js` with your username
 
-### Common Tasks
+2. **Create Personal Access Token**:
+   - GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
+   - Generate new token
+   - Select `repo` scope
+   - Copy token (you won't see it again!)
 
-**Add a new field to subjects:**
-```javascript
-// 1. Update default subject structure in data/subjects.js
-// 2. Update renderSubjectCard() to display it
-// 3. Update openSubjectDetail() to populate modal
-// 4. Update saveSubjectDetail() to save it
-```
+3. **First Login**:
+   - Visit your GitHub Pages URL
+   - Click "Sign In"
+   - Paste your token
+   - Start tracking!
 
-**Add a new modal:**
-```javascript
-// 1. Add HTML in index.html
-// 2. Create openXModal() function
-// 3. Create closeXModal() function
-// 4. Create saveXModal() function
-// 5. Add event listeners in DOMContentLoaded
-// 6. Add click-outside-to-close handler
-```
+4. **Cross-Device Usage**:
+   - Sign in on any device with your token
+   - Data syncs automatically
+   - Changes propagate within minutes
 
-**Add a new view:**
-```javascript
-// 1. Add navigation button in index.html
-// 2. Add case in switchView() function
-// 3. Add render logic in render() function
-// 4. Add any view-specific functions
-// 5. Update saveView() and loadView()
-```
+### For Forking Users
+
+See README.md for complete fork/clone instructions.
+
+### For Public Viewers
+
+- Visit the GitHub Pages URL
+- Browse the read-only catalog
+- Click into subjects/projects to view details
+- Fork the repository to create your own tracker
 
 ## Contact & Support
 
-This is a personal learning tracker project. For questions or contributions, refer to the GitHub repository (if applicable) or contact the project maintainer.
+This is a personal learning tracker project. For questions, issues, or contributions:
+- GitHub Issues: https://github.com/JapanColorado/learning-tracker/issues
+- Fork and modify for your own use
+- Share improvements via pull requests
 
 ---
 
-**Last Updated**: 2025-11-29
-**Total Lines of Code**: ~1750 (HTML + JS + CSS)
+**Last Updated**: 2025-11-30
+**Version**: 2.0 (GitHub Integration)
+**Total Lines of Code**: ~2500 (HTML + JS + CSS)
