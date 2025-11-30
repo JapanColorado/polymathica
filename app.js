@@ -56,6 +56,45 @@ function saveProgress() {
     localStorage.setItem('subjectProgress', JSON.stringify(subjectProgress));
 }
 
+// Load public data from GitHub (no auth required)
+async function loadPublicDataFromGitHub() {
+    try {
+        console.log('[App] Loading public data from GitHub...');
+        const rawUrl = `https://raw.githubusercontent.com/${CONFIG.github.repoOwner}/${CONFIG.github.repoName}/${CONFIG.github.branch}/data/user-data.json`;
+
+        const response = await fetch(rawUrl);
+        if (!response.ok) {
+            console.log('[App] No public data file found');
+            return false;
+        }
+
+        const userData = await response.json();
+
+        // Apply user data
+        if (userData.progress) {
+            subjectProgress = userData.progress;
+        }
+        if (userData.subjects) {
+            // Merge user customizations with default catalog
+            subjects = JSON.parse(JSON.stringify(defaultSubjects));
+            for (const tierData of Object.values(subjects)) {
+                for (const subject of tierData.subjects) {
+                    const userSubjectData = userData.subjects[subject.id];
+                    if (userSubjectData) {
+                        Object.assign(subject, userSubjectData);
+                    }
+                }
+            }
+        }
+
+        console.log('[App] Public data loaded successfully');
+        return true;
+    } catch (error) {
+        console.error('[App] Failed to load public data:', error);
+        return false;
+    }
+}
+
 // GitHub sync integration
 async function loadDataFromGitHub() {
     if (!window.githubStorage || !window.githubAuth || !githubAuth.isAuthenticated()) {
@@ -120,14 +159,13 @@ async function saveDataToGitHub() {
             currentView: currentView
         };
 
-        // Extract only user-customized data (goals, resources, projects, notepads)
+        // Extract only user-customized data (goals, resources, projects)
         for (const tierData of Object.values(subjects)) {
             for (const subject of tierData.subjects) {
                 const userCustomizations = {};
                 if (subject.goal) userCustomizations.goal = subject.goal;
                 if (subject.resources && subject.resources.length > 0) userCustomizations.resources = subject.resources;
                 if (subject.projects && subject.projects.length > 0) userCustomizations.projects = subject.projects;
-                if (subject.notepad) userCustomizations.notepad = subject.notepad;
 
                 if (Object.keys(userCustomizations).length > 0) {
                     userData.subjects[subject.id] = userCustomizations;
@@ -363,7 +401,7 @@ function renderSubjectCard(subject) {
     let cardClasses = `subject-card ${progress}`;
     if (readiness === 'locked') cardClasses += ' locked';
 
-    // Public mode: Show everything except notepads, read-only (no edit access)
+    // Public mode: Show everything read-only (no edit access)
     if (isPublicMode) {
         return `
             <div class="${cardClasses}" data-id="${subject.id}">
@@ -549,10 +587,8 @@ function openSubjectDetail(subjectId, event) {
     if (!subject) return;
     document.getElementById('detailModalTitle').textContent = subject.name;
     document.getElementById('subjectGoal').value = subject.goal || '';
-    document.getElementById('subjectNotepad').value = subject.notepad || '';
     renderResourcesList(subject.resources || [], 'resourcesList', 'subject');
     renderProjectsList(subject.projects || []);
-    switchNotepadTab('edit', 'subject');
     document.getElementById('subjectDetailModal').classList.add('active');
 }
 
@@ -567,7 +603,6 @@ function saveSubjectDetail() {
     if (!subject) return;
     const goal = document.getElementById('subjectGoal').value.trim();
     subject.goal = goal || undefined;
-    subject.notepad = document.getElementById('subjectNotepad').value;
     saveSubjects();
     closeSubjectDetail();
     render();
@@ -714,7 +749,6 @@ function addProject() {
     document.getElementById('projectModalTitle').textContent = 'Add New Project';
     document.getElementById('projectName').value = '';
     document.getElementById('projectGoal').value = '';
-    document.getElementById('projectNotepad').value = '';
     document.getElementById('deleteProjectBtn').style.display = 'none'; // Hide delete button for new projects
 
     // Clear resources list
@@ -734,9 +768,7 @@ function editProject(projectIndex, event) {
     document.getElementById('projectModalTitle').textContent = 'Edit Project';
     document.getElementById('projectName').value = project.name;
     document.getElementById('projectGoal').value = project.goal;
-    document.getElementById('projectNotepad').value = project.notepad || '';
     renderResourcesList(project.resources || [], 'projectResourcesList', 'project');
-    switchNotepadTab('edit', 'project');
     document.getElementById('projectDetailModal').classList.add('active');
     document.getElementById('deleteProjectBtn').style.display = 'inline-block';
 }
@@ -764,7 +796,6 @@ function saveProjectDetail() {
 
     const name = document.getElementById('projectName').value.trim();
     const goal = document.getElementById('projectGoal').value.trim();
-    const notepad = document.getElementById('projectNotepad').value;
 
     if (!name) { alert('Project name is required'); return; }
     if (!goal) { alert('Project goal is required'); return; }
@@ -779,7 +810,6 @@ function saveProjectDetail() {
             name: name,
             goal: goal,
             resources: [...tempProjectResources], // Include any resources added before saving
-            notepad: notepad,
             status: 'not-started'
         };
         subject.projects = subject.projects || [];
@@ -792,7 +822,6 @@ function saveProjectDetail() {
         const project = subject.projects[projectIndex];
         project.name = name;
         project.goal = goal;
-        project.notepad = notepad;
     }
 
     saveSubjects();
@@ -812,43 +841,6 @@ function deleteCurrentProject() {
     closeProjectDetail();
     renderProjectsList(subject.projects);
     render();
-}
-
-// Notepad Tab Switching
-function switchNotepadTab(tab, context) {
-    const tabs = document.querySelectorAll(`.notepad-tab[data-context="${context}"]`);
-    const textarea = document.getElementById(context === 'subject' ? 'subjectNotepad' : 'projectNotepad');
-    const preview = document.getElementById(context === 'subject' ? 'subjectNotepadPreview' : 'projectNotepadPreview');
-
-    tabs.forEach(t => {
-        if (t.dataset.tab === tab) {
-            t.classList.add('active');
-        } else {
-            t.classList.remove('active');
-        }
-    });
-
-    if (tab === 'edit') {
-        textarea.style.display = 'block';
-        preview.classList.remove('active');
-    } else {
-        textarea.style.display = 'none';
-        preview.classList.add('active');
-        updateNotepadPreview(context);
-    }
-}
-
-function updateNotepadPreview(context) {
-    const textarea = document.getElementById(context === 'subject' ? 'subjectNotepad' : 'projectNotepad');
-    const preview = document.getElementById(context === 'subject' ? 'subjectNotepadPreview' : 'projectNotepadPreview');
-    const markdown = textarea.value;
-
-    if (markdown.trim()) {
-        marked.setOptions({ breaks: true, gfm: true });
-        preview.innerHTML = marked.parse(markdown);
-    } else {
-        preview.innerHTML = '<p class="empty-state">Nothing to preview. Add some markdown in the Edit tab.</p>';
-    }
 }
 
 // ==========================================
@@ -1007,15 +999,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('saveDetailBtn').addEventListener('click', saveSubjectDetail);
     document.getElementById('addSubjectResourceBtn').addEventListener('click', () => addResource('subject'));
     document.getElementById('addProjectBtn').addEventListener('click', addProject);
-    document.querySelectorAll('.notepad-tab[data-context="subject"]').forEach(tab => tab.addEventListener('click', () => switchNotepadTab(tab.dataset.tab, 'subject')));
-    document.getElementById('subjectNotepad').addEventListener('input', () => { if (document.getElementById('subjectNotepadPreview').classList.contains('active')) updateNotepadPreview('subject'); });
     document.getElementById('closeProjectBtn').addEventListener('click', closeProjectDetail);
     document.getElementById('cancelProjectBtn').addEventListener('click', closeProjectDetail);
     document.getElementById('saveProjectBtn').addEventListener('click', saveProjectDetail);
     document.getElementById('deleteProjectBtn').addEventListener('click', deleteCurrentProject);
     document.getElementById('addProjectResourceBtn').addEventListener('click', () => addResource('project'));
-    document.querySelectorAll('.notepad-tab[data-context="project"]').forEach(tab => tab.addEventListener('click', () => switchNotepadTab(tab.dataset.tab, 'project')));
-    document.getElementById('projectNotepad').addEventListener('input', () => { if (document.getElementById('projectNotepadPreview').classList.contains('active')) updateNotepadPreview('project'); });
     document.getElementById('subjectDetailModal').addEventListener('click', (e) => { if (e.target.id === 'subjectDetailModal') closeSubjectDetail(); });
     document.getElementById('projectDetailModal').addEventListener('click', (e) => { if (e.target.id === 'projectDetailModal') closeProjectDetail(); });
     document.getElementById('closeResourceBtn').addEventListener('click', closeResourceModal);
@@ -1053,6 +1041,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Start auto-sync
                 if (window.githubStorage && CONFIG.features.enableAutoSync) {
                     githubStorage.startAutoSync();
+                }
+            })();
+        } else {
+            // Not authenticated - load public data for read-only view
+            (async () => {
+                viewMode = 'public';
+                const loaded = await loadPublicDataFromGitHub();
+                if (loaded) {
+                    render();
                 }
             })();
         }
