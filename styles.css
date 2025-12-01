@@ -336,6 +336,13 @@ h1 {
     text-decoration: underline;
 }
 
+/* Empty states in detail sections (modals) should be left-aligned with less padding */
+.detail-section .empty-state {
+    text-align: left;
+    padding: 10px 0;
+    margin: 0;
+}
+
 .controls {
     display: flex;
     gap: 15px;
@@ -978,8 +985,8 @@ input[type="text"] {
 
 .detail-section textarea {
     width: 100%;
-    min-height: 100px;
-    padding: 12px;
+    min-height: 60px;
+    padding: 10px 12px;
     border: 2px solid var(--border-dark);
     border-radius: 5px;
     font-family: inherit;
@@ -988,6 +995,7 @@ input[type="text"] {
     background: var(--bg-secondary);
     color: var(--text-primary);
     transition: border-color 0.3s;
+    line-height: 1.5;
 }
 
 .detail-section textarea:focus {
@@ -1154,8 +1162,7 @@ input[type="text"] {
 }
 
 .summary-section {
-    font-style: italic;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     margin-bottom: 12px;
     position: relative;
 }
@@ -1481,8 +1488,20 @@ input[type="text"] {
         flex: 1;
     }
 
+    /* Hide summaries on mobile */
+    .summary-section {
+        display: none;
+    }
+
+    /* Make nav more compact on mobile */
+    .main-nav {
+        gap: 10px;
+        padding: 10px 0;
+    }
+
     .nav-theme-toggle {
         width: 100%;
+        justify-content: center;
     }
 
     .modal-content {

@@ -1,12 +1,16 @@
 # TODO
 
 - Fix theme toggle and nav on mobile view
+- Get rid of read more summary buttons, just display the full summary inline with the Summary: header.
+- Get rid of the italization on the Summary: header and on the summary
 - Hide summaries on mobile view
 - Fix goal text bar - too large vertically, too skinny horizontally
-- No resources yet and no projects yet text is not align
+- "No resources yet" and "no projects yet" text is not aligned
 - Review codebase, simplify where possible
 - Split app.js into more useful sub-files
 - Organize and clean repo
+- Cog should not be visible in public view
+- Make ico file (me)
 
 ## Done
 

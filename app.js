@@ -727,15 +727,8 @@ function renderSubjectCardExpanded(subject) {
     // Summary (if exists - now comes from catalog)
     const summary = subject.summary;
     if (summary) {
-        const isTruncated = summary.length > 200;
-        const displaySummary = isTruncated ? summary.substring(0, 200) + '...' : summary;
-
         html += `<div class="card-section summary-section">
-                   <strong>Summary:</strong>
-                   <span class="summary-text" data-full-text="${isTruncated ? 'true' : 'false'}">
-                       ${displaySummary}
-                   </span>
-                   ${isTruncated ? '<button class="expand-summary-btn" onclick="toggleSummary(event)">Read More</button>' : ''}
+                   <strong>Summary:</strong> <span class="summary-text">${summary}</span>
                  </div>`;
     }
 
