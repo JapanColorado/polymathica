@@ -1,36 +1,7 @@
 {
-  "version": "2.0",
-  "lastModified": "2025-12-01T03:12:01.031Z",
-  "progress": {
-    "calc1": "complete",
-    "calc2": "partial",
-    "calc3": "partial",
-    "discrete": "partial",
-    "blah-blah": "empty",
-    "asdfasdf": "empty"
-  },
-  "subjects": {
-    "calc2": {
-      "goal": "asdfas",
-      "projects": [
-        {
-          "id": "calc2-project-1764468843499",
-          "name": "asdfads",
-          "goal": "asdfasdfadsf",
-          "resources": [
-            {
-              "type": "link",
-              "value": "asdfasdf",
-              "url": "https://github.com/JapanColorado/learning-tracker"
-            }
-          ],
-          "status": "not-started"
-        }
-      ]
-    },
-    "asdfasdf": {
-      "goal": "Yes!"
-    }
-  },
-  "theme": "dark"
+  "schema": "3.0",
+  "lastModified": "2025-12-01T16:44:43.909Z",
+  "progress": {},
+  "theme": "dark",
+  "version": "2.0"
 }
