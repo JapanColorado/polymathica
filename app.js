@@ -349,7 +349,7 @@ async function saveDataToGitHub() {
         saveSubjects();
         saveProgress();
 
-        updateSyncStatus();
+        updateSyncStatusInSettings();
         console.log('[App] Data saved to GitHub successfully');
         return true;
     } catch (error) {
@@ -1516,30 +1516,6 @@ function updateSettingsButtonVisibility() {
     const settingsButton = document.getElementById('settingsButton');
     if (settingsButton) {
         settingsButton.style.display = viewMode === 'public' ? 'none' : 'block';
-    }
-}
-
-function updateSyncStatus() {
-    if (!window.githubStorage) return;
-
-    const syncStatus = document.getElementById('syncStatus');
-    const syncStatusText = document.getElementById('syncStatusText');
-    const status = githubStorage.getSyncStatus();
-
-    syncStatus.className = 'sync-status';
-    if (status.status === 'offline') {
-        syncStatus.classList.add('hidden');
-    } else {
-        syncStatus.classList.remove('hidden');
-        syncStatusText.textContent = status.message;
-
-        if (status.status === 'syncing') {
-            syncStatus.classList.add('syncing');
-        } else if (status.status === 'error') {
-            syncStatus.classList.add('error');
-        } else if (status.status === 'synced') {
-            syncStatus.classList.add('success');
-        }
     }
 }
 
