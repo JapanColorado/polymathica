@@ -1,5 +1,13 @@
 # TODO
 
+- Modularize codebase
+- Hide summaries on dashboard subject cards
+- Write good readme (short, to the point)
+- Simplify subject catalog
+  - eg. get rid of (continue to fluency) in Japanese subject
+
+## Done
+
 - Fix theme toggle and nav on mobile view
 - Get rid of read more summary buttons, just display the full summary inline with the Summary: header.
 - Get rid of the italization on the Summary: header and on the summary
@@ -10,10 +18,6 @@
 - Split app.js into more useful sub-files
 - Organize and clean repo
 - Cog should not be visible in public view
-
-
-## Done
-
 - Make favicon (me)
 - Make setting page only useable in owner mode
 - Move sync and theme toggle to inside settings page, move cog icon to farthest right
