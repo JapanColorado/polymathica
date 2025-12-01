@@ -242,7 +242,7 @@ class GitHubStorage {
             lastModified: new Date().toISOString(),
             progress: {},
             subjects: {},
-            theme: 'light',
+            theme: 'dark',
             currentView: 'dashboard'
         };
     }

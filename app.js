@@ -366,7 +366,7 @@ async function saveDataToGitHub() {
 // Theme management
 function loadTheme() {
     const saved = localStorage.getItem('theme');
-    return saved || 'light';
+    return saved || 'dark';
 }
 
 function saveTheme(theme) {
@@ -384,8 +384,33 @@ function toggleTheme() {
 
 function updateThemeButton(theme) {
     const button = document.getElementById('themeToggle');
-    if (button) {
-        button.textContent = theme === 'dark' ? '🌙' : '☀️';
+    if (!button) return;
+
+    const icon = button.querySelector('.theme-icon');
+    const text = button.querySelector('.theme-text');
+
+    if (!icon || !text) return;
+
+    if (theme === 'dark') {
+        // Moon icon for dark mode
+        icon.innerHTML = `
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        `;
+        text.textContent = 'Dark';
+    } else {
+        // Sun icon for light mode
+        icon.innerHTML = `
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        `;
+        text.textContent = 'Light';
     }
 }
 
@@ -680,6 +705,7 @@ function renderSubjectCard(subject) {
 function renderSubjectCardExpanded(subject) {
     const progress = getSubjectProgress(subject.id);
     const readiness = calculateReadiness(subject);
+    const isPublicMode = viewMode === 'public';
 
     let cardClasses = `subject-card expanded ${progress}`;
     if (readiness === 'locked') cardClasses += ' locked';
@@ -689,15 +715,27 @@ function renderSubjectCardExpanded(subject) {
     // Header with title and checkbox
     html += `<div class="card-header">`;
     html += `<h3 class="subject-title">${subject.name}</h3>`;
-    html += `<div class="progress-checkbox ${progress}" onclick="cycleProgress('${subject.id}', event)"></div>`;
+
+    // Checkbox: clickable in owner mode, static in public mode
+    if (isPublicMode) {
+        html += `<div class="progress-checkbox ${progress}" style="pointer-events: none;"></div>`;
+    } else {
+        html += `<div class="progress-checkbox ${progress}" onclick="cycleProgress('${subject.id}', event)"></div>`;
+    }
     html += `</div>`;
 
     // Summary (if exists - now comes from catalog)
     const summary = subject.summary;
     if (summary) {
-        const truncatedSummary = summary.length > 200 ? summary.substring(0, 200) + '...' : summary;
+        const isTruncated = summary.length > 200;
+        const displaySummary = isTruncated ? summary.substring(0, 200) + '...' : summary;
+
         html += `<div class="card-section summary-section">
-                   <strong>Summary:</strong> <span class="summary-text">${truncatedSummary}</span>
+                   <strong>Summary:</strong>
+                   <span class="summary-text" data-full-text="${isTruncated ? 'true' : 'false'}">
+                       ${displaySummary}
+                   </span>
+                   ${isTruncated ? '<button class="expand-summary-btn" onclick="toggleSummary(event)">Read More</button>' : ''}
                  </div>`;
     }
 
@@ -741,14 +779,25 @@ function renderSubjectCardExpanded(subject) {
                 'completed': 'complete'
             }[project.status] || 'empty';
 
-            html += `<div class="project-card-expanded ${projectProgress}" onclick="editProject('${subject.id}', ${index}, event)">`;
+            // In public mode, use viewProject instead of editProject
+            const projectClickHandler = isPublicMode
+                ? `onclick="viewProject(${index}, event)"`
+                : `onclick="editProject('${subject.id}', ${index}, event)"`;
+
+            html += `<div class="project-card-expanded ${projectProgress}" ${projectClickHandler}>`;
             html += `<div class="project-header">`;
             html += `<span class="project-name">
                        ${project.name}
                      </span>`;
-            html += `<div class="project-progress-checkbox ${projectProgress}"
-                          onclick="cycleProjectProgress('${subject.id}', ${index}, event)">
-                     </div>`;
+
+            // Project checkbox: static in public mode
+            if (isPublicMode) {
+                html += `<div class="project-progress-checkbox ${projectProgress}" style="pointer-events: none;"></div>`;
+            } else {
+                html += `<div class="project-progress-checkbox ${projectProgress}"
+                              onclick="cycleProjectProgress('${subject.id}', ${index}, event)">
+                         </div>`;
+            }
             html += `</div>`;
 
             if (project.goal) {
@@ -780,6 +829,32 @@ function renderSubjectCardExpanded(subject) {
     return html;
 }
 
+function toggleSummary(event) {
+    event.stopPropagation();
+    const button = event.target;
+    const summaryText = button.previousElementSibling;
+    const card = button.closest('.subject-card');
+    const subjectId = card.dataset.id;
+    const subject = findSubject(subjectId);
+
+    if (!subject || !subject.summary) return;
+
+    const isExpanded = button.textContent === 'Read Less';
+
+    if (isExpanded) {
+        // Collapse
+        const truncated = subject.summary.substring(0, 200) + '...';
+        summaryText.textContent = truncated;
+        button.textContent = 'Read More';
+        summaryText.classList.remove('expanded');
+    } else {
+        // Expand
+        summaryText.textContent = subject.summary;
+        button.textContent = 'Read Less';
+        summaryText.classList.add('expanded');
+    }
+}
+
 function renderTier(tierName, tierData, isCollapsed = false) {
     const progress = calculateTierProgress(tierData);
     const subjectsHtml = tierData.subjects.map(renderSubjectCard).join('');
@@ -808,9 +883,10 @@ function render() {
     const content = document.getElementById('content');
     if (!content) return;
     let html = '';
+    const isPublicMode = viewMode === 'public';
 
-    // Public mode: Show banner and force catalog view
-    if (viewMode === 'public') {
+    // Public mode: Show banner at top
+    if (isPublicMode) {
         html += `
             <div class="public-view-banner">
                 📚 You're viewing a public learning catalog.
@@ -818,11 +894,10 @@ function render() {
                 to create your own personalized version!
             </div>
         `;
-        // Force catalog view in public mode
-        html += Object.entries(subjects).map(([name, data]) => renderTier(name, data, false)).join('');
     }
-    // Owner mode: Show dashboard or catalog
-    else if (currentView === 'dashboard') {
+
+    // Render dashboard or catalog based on currentView (works for both modes now)
+    if (currentView === 'dashboard') {
         const currentSubjects = [];
         const completedSubjects = [];
         Object.values(subjects).forEach(tierData => {
@@ -839,7 +914,11 @@ function render() {
             html += currentSubjects.map(renderSubjectCardExpanded).join('');
             html += '</div>';
         } else {
-            html += '<p class="empty-state">No subjects in progress. Visit the <a href="#" onclick="switchView(\'catalog\'); return false;">Catalog</a> to get started!</p>';
+            if (isPublicMode) {
+                html += '<p class="empty-state">No subjects currently in progress.</p>';
+            } else {
+                html += '<p class="empty-state">No subjects in progress. Visit the <a href="#" onclick="switchView(\'catalog\'); return false;">Catalog</a> to get started!</p>';
+            }
         }
         html += '</div>';
 
@@ -850,7 +929,7 @@ function render() {
             html += completedSubjects.map(renderSubjectCard).join('');
             html += '</div>';
         } else {
-            html += '<p class="empty-state">No completed subjects yet. Keep learning!</p>';
+            html += '<p class="empty-state">No completed subjects yet.</p>';
         }
         html += '</div>';
     } else {
@@ -925,17 +1004,26 @@ function openSubjectDetail(subjectId, event) {
     const addProjectBtn = document.getElementById('addProjectBtn');
     const saveBtn = document.getElementById('saveDetailBtn');
     const cancelBtn = document.getElementById('cancelDetailBtn');
+    const deleteBtn = document.getElementById('deleteSubjectBtn');
 
     if (isPublicMode) {
         addResourceBtn.style.display = 'none';
         addProjectBtn.style.display = 'none';
         saveBtn.style.display = 'none';
         cancelBtn.style.display = 'none';
+        deleteBtn.style.display = 'none';
     } else {
         addResourceBtn.style.display = 'block';
         addProjectBtn.style.display = 'block';
         saveBtn.style.display = 'inline-block';
         cancelBtn.style.display = 'inline-block';
+
+        // Show delete button ONLY for custom subjects in owner mode
+        if (subject.isCustom) {
+            deleteBtn.style.display = 'inline-block';
+        } else {
+            deleteBtn.style.display = 'none';
+        }
     }
 
     document.getElementById('subjectDetailModal').classList.add('active');
@@ -1259,6 +1347,82 @@ function removeProject(projectIndex, event) {
     render();
 }
 
+function deleteCustomSubject() {
+    if (!currentEditingSubject) return;
+
+    const subject = findSubject(currentEditingSubject);
+    if (!subject) return;
+
+    // Safety check: only allow deleting custom subjects
+    if (!subject.isCustom) {
+        alert('Cannot delete catalog subjects. Only custom subjects can be deleted.');
+        return;
+    }
+
+    // Check for dependencies
+    const dependencies = findDependentSubjects(currentEditingSubject);
+    if (dependencies.length > 0) {
+        const depNames = dependencies.map(s => s.name).join(', ');
+        if (!confirm(`Warning: The following subjects list this as a prerequisite or dependency:\n\n${depNames}\n\nDeleting this subject may affect these subjects. Continue anyway?`)) {
+            return;
+        }
+    }
+
+    // Final confirmation
+    if (!confirm(`Are you sure you want to delete "${subject.name}"?\n\nThis will permanently remove:\n- All progress data\n- Goals and resources\n- All projects\n\nThis action cannot be undone.`)) {
+        return;
+    }
+
+    // Find and remove from subjects structure
+    const tierInfo = findSubjectAndTier(currentEditingSubject);
+    if (tierInfo) {
+        tierInfo.tierData.subjects.splice(tierInfo.index, 1);
+
+        // If tier is now empty and was custom, remove the tier too
+        if (tierInfo.tierData.subjects.length === 0 &&
+            (tierInfo.tierData.category === 'custom' || tierInfo.tierData.order >= 999)) {
+            delete subjects[tierInfo.tierName];
+        }
+    }
+
+    // Remove progress data
+    delete subjectProgress[currentEditingSubject];
+
+    // Save changes
+    saveSubjects();
+    saveProgress();
+
+    // If authenticated, sync to GitHub
+    if (window.githubAuth && githubAuth.isAuthenticated()) {
+        saveDataToGitHub();
+    }
+
+    // Close modal and re-render
+    closeSubjectDetail();
+    render();
+
+    alert(`"${subject.name}" has been deleted.`);
+}
+
+// Helper function to find subjects that depend on this subject
+function findDependentSubjects(subjectId) {
+    const dependents = [];
+
+    for (const tierData of Object.values(subjects)) {
+        for (const subject of tierData.subjects) {
+            if (subject.prereq && subject.prereq.includes(subjectId)) {
+                dependents.push(subject);
+            } else if (subject.coreq && subject.coreq.includes(subjectId)) {
+                dependents.push(subject);
+            } else if (subject.soft && subject.soft.includes(subjectId)) {
+                dependents.push(subject);
+            }
+        }
+    }
+
+    return dependents;
+}
+
 // Project Detail Modal
 function closeProjectDetail() {
     document.getElementById('projectDetailModal').classList.remove('active');
@@ -1327,6 +1491,7 @@ async function updateViewMode() {
     } else {
         viewMode = CONFIG.app.viewModes.PUBLIC;
     }
+    updateSettingsButtonVisibility();
     render();
 }
 
@@ -1348,6 +1513,13 @@ function updateAuthButton() {
         authButton.classList.remove('signed-in');
         authButton.onclick = openAuthModal;
         syncStatus.classList.add('hidden');
+    }
+}
+
+function updateSettingsButtonVisibility() {
+    const settingsButton = document.getElementById('settingsButton');
+    if (settingsButton) {
+        settingsButton.style.display = viewMode === 'public' ? 'none' : 'block';
     }
 }
 
@@ -1431,6 +1603,45 @@ async function saveToken() {
     }
 }
 
+function updateSyncStatusInSettings() {
+    if (!window.githubStorage) return;
+
+    const syncIcon = document.getElementById('syncIconLarge');
+    const syncMessage = document.getElementById('syncMessage');
+    const syncDetails = document.getElementById('syncDetails');
+
+    if (!syncIcon || !syncMessage || !syncDetails) return;
+
+    const status = githubStorage.getSyncStatus();
+
+    // Clear previous state classes
+    syncIcon.className = 'sync-icon-large';
+
+    // Update based on status
+    if (status.status === 'syncing') {
+        syncIcon.classList.add('syncing');
+        syncMessage.textContent = 'Syncing...';
+        syncMessage.className = 'sync-message syncing';
+    } else if (status.status === 'error') {
+        syncMessage.textContent = 'Sync Error';
+        syncMessage.className = 'sync-message error';
+    } else if (status.status === 'synced') {
+        syncMessage.textContent = 'Synced';
+        syncMessage.className = 'sync-message success';
+    } else {
+        syncMessage.textContent = status.message;
+        syncMessage.className = 'sync-message';
+    }
+
+    // Update details
+    if (githubStorage.cache.lastFetch) {
+        const lastSync = new Date(githubStorage.cache.lastFetch);
+        syncDetails.textContent = `Last synced: ${lastSync.toLocaleString()}`;
+    } else {
+        syncDetails.textContent = 'Never synced';
+    }
+}
+
 async function manualSync() {
     if (!window.githubStorage || !window.githubAuth || !githubAuth.isAuthenticated()) {
         alert('Please sign in first');
@@ -1438,16 +1649,40 @@ async function manualSync() {
     }
 
     try {
-        updateSyncStatus();
+        // Update UI to show syncing
+        updateSyncStatusInSettings();
+
         await saveDataToGitHub();
+
+        // Update UI after sync
+        updateSyncStatusInSettings();
         alert('Sync complete!');
     } catch (error) {
+        updateSyncStatusInSettings();
         alert('Sync failed: ' + error.message);
     }
 }
 
 // Settings Modal Functions
 function openSettingsModal() {
+    if (viewMode === 'public') {
+        console.warn('[Settings] Settings not available in public mode');
+        return;
+    }
+
+    // Show/hide sync section based on authentication
+    const syncSection = document.getElementById('syncStatusSection');
+    const isAuthenticated = window.githubAuth && githubAuth.isAuthenticated();
+
+    if (syncSection) {
+        syncSection.style.display = isAuthenticated ? 'block' : 'none';
+    }
+
+    // Update sync status display if authenticated
+    if (isAuthenticated) {
+        updateSyncStatusInSettings();
+    }
+
     document.getElementById('settingsModal').classList.add('active');
 }
 
@@ -1868,6 +2103,9 @@ window.removeProject = removeProject;
 window.removeResource = removeResource;
 window.switchView = switchView;
 window.toggleTier = toggleTier;
+window.toggleSummary = toggleSummary;
+window.deleteCustomSubject = deleteCustomSubject;
+window.findDependentSubjects = findDependentSubjects;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -1893,6 +2131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('closeDetailBtn').addEventListener('click', closeSubjectDetail);
     document.getElementById('cancelDetailBtn').addEventListener('click', closeSubjectDetail);
     document.getElementById('saveDetailBtn').addEventListener('click', saveSubjectDetail);
+    document.getElementById('deleteSubjectBtn').addEventListener('click', deleteCustomSubject);
     document.getElementById('addSubjectResourceBtn').addEventListener('click', () => addResource('subject'));
     document.getElementById('addProjectBtn').addEventListener('click', addProject);
     document.getElementById('closeProjectBtn').addEventListener('click', closeProjectDetail);
@@ -1923,6 +2162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('settingsButton').addEventListener('click', openSettingsModal);
     document.getElementById('closeSettingsBtn').addEventListener('click', closeSettingsModal);
     document.getElementById('closeSettingsFooterBtn').addEventListener('click', closeSettingsModal);
+    document.getElementById('manualSyncBtn')?.addEventListener('click', manualSync);
     document.getElementById('exportDataBtn').addEventListener('click', exportData);
     document.getElementById('importDataBtn').addEventListener('click', importData);
     document.getElementById('importFileInput').addEventListener('change', handleImportFile);
@@ -1965,6 +2205,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 viewMode = 'public';
                 const loaded = await loadPublicDataFromGitHub();
                 console.log('[Init] Public data loaded:', loaded);
+                updateSettingsButtonVisibility();
                 // Always render, even if loading failed (will show empty state)
                 render();
             })();

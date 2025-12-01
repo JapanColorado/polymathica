@@ -6,7 +6,7 @@ const CONFIG = {
     github: {
         clientId: 'Ov23limAHgxWKUF6JeG8',
         repoOwner: 'JapanColorado',
-        repoName: 'learning-tracker',
+        repoName: 'polymathica',
         branch: 'main'
     },
 

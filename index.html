@@ -20,15 +20,24 @@
                     Catalog
                 </button>
             </div>
-            <button class="theme-toggle nav-theme-toggle" id="themeToggle">☀️</button>
-            <button class="settings-button" id="settingsButton" title="Settings">⚙️</button>
+            <button class="theme-toggle nav-theme-toggle" id="themeToggle">
+                <svg class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <span class="theme-text">Light</span>
+            </button>
             <div class="auth-controls">
                 <button class="auth-button" id="authButton">Sign In</button>
-                <div class="sync-status hidden" id="syncStatus">
-                    <span class="sync-icon">⟳</span>
-                    <span id="syncStatusText">Synced</span>
-                </div>
             </div>
+            <button class="settings-button" id="settingsButton" title="Settings">⚙️</button>
         </nav>
 
 
@@ -119,6 +128,7 @@
 
                 <div class="modal-footer">
                     <button class="secondary" id="cancelDetailBtn">Cancel</button>
+                    <button class="danger-button" id="deleteSubjectBtn" style="display: none;">Delete Subject</button>
                     <button id="saveDetailBtn">Save</button>
                 </div>
             </div>
@@ -225,6 +235,19 @@
                     <button class="close-button" id="closeSettingsBtn">&times;</button>
                 </div>
                 <div class="modal-body">
+                    <!-- Sync Status Section (only shown when authenticated) -->
+                    <div class="detail-section sync-status-section" id="syncStatusSection" style="display: none;">
+                        <h3>Sync Status</h3>
+                        <div class="sync-status-display">
+                            <div class="sync-icon-large" id="syncIconLarge">⟳</div>
+                            <div class="sync-info">
+                                <div class="sync-message" id="syncMessage">Synced</div>
+                                <div class="sync-details" id="syncDetails">Last synced: Just now</div>
+                            </div>
+                            <button class="action-button" id="manualSyncBtn">🔄 Sync Now</button>
+                        </div>
+                    </div>
+
                     <!-- Data Export/Import Section -->
                     <div class="detail-section">
                         <h3>Data Management</h3>

@@ -1,22 +1,29 @@
 # TODO
 
-- Test subject creation, reset feature, data import/export
-- Make setting page only show up on owner mode
-- Move sync and theme toggle to inside settings page, move cog icon to farthest right
-- Make theme toggle look better
-- Restore the dashboard view capability on public mode
+- Fix theme toggle and nav on mobile view
+- Hide summaries on mobile view
+- Fix goal text bar - too large vertically, too skinny horizontally
+- No resources yet and no projects yet text is not align
 - Review codebase, simplify where possible
 - Split app.js into more useful sub-files
 - Organize and clean repo
-- Revise subject pre-reqs/co-reqs/recommendeds and subject IDs
-- Store summaries and subjects in a better way than JSON if possible
-- Current custom subjects/default subjects separation is clunky, I wonder if there's a better way...maybe using owner mode github access to write custom subjects directly to a subjects data file? I'm not sure.
-  - Add button to delete subject in the expanded catalog view (requires owner view and are you sure?)
-- Make scrollbar pretty
 
 ## Done
 
+- Make setting page only useable in owner mode
+- Move sync and theme toggle to inside settings page, move cog icon to farthest right
+  - Cog icon should not appear in public mode, only the theme toggl button
+- Make theme toggle look better - either just text or text+icon in a better-looking button
+- Restore the dashboard view capability on public mode
+- Make scrollbar pretty
+- Make dark theme the default
+- Add button to delete custom subject in the expanded catalog view of custom subject (requires owner view and are you sure?)
+- Fix summary being cutoff in dashboard subject cards
+- Rename repo and folder to polymathica
+- Store summaries and subjects in a better way than JSON if possible
+- Current custom subjects/default subjects separation is clunky, I wonder if there's a better way...maybe using owner mode github access to write custom subjects directly to a subjects data file? I'm not sure.
 - Revise subject summaries to have no formatting
+- Test subject creation, reset feature, data import/export
 - Fix resources being unaddable in projects
   - Resource adding modal appears below project modal
   - Resources don't get assigned to projects correctly

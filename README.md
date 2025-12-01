@@ -108,6 +108,19 @@ const CONFIG = {
 };
 ```
 
+## Renaming Your Repository
+
+Want to give your tracker a custom name? See the [Repository Rename Guide](docs/REPO_RENAME_GUIDE.md) for step-by-step instructions.
+
+**Quick Summary:**
+
+1. Rename on GitHub (Settings → Repository name)
+2. Update `config.js` (`repoName` field)
+3. Commit and push
+4. Re-authenticate on new URL
+
+The guide covers troubleshooting, GitHub Pages updates, and what to expect when renaming.
+
 ## Creating Your Own Tracker
 
 Want to use Polymathica for your own learning journey? Here's how:

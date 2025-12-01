@@ -42,6 +42,52 @@
     --modal-overlay: rgba(0,0,0,0.7);
 }
 
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-dark);
+    border-radius: 10px;
+    border: 3px solid var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+::-webkit-scrollbar-corner {
+    background: var(--bg-primary);
+}
+
+/* Firefox scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-dark) var(--bg-primary);
+}
+
+/* Modal scrollbars - slightly thinner */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 6px;
+    border: 2px solid var(--bg-secondary);
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
@@ -124,16 +170,34 @@ h1 {
 
 .nav-theme-toggle {
     flex-shrink: 0;
-    background: transparent;
-    border: none;
-    font-size: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 6px;
     cursor: pointer;
-    padding: 5px 10px;
-    transition: transform 0.3s;
+    transition: all 0.2s;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
 .nav-theme-toggle:hover {
-    transform: scale(1.1);
+    background: var(--border-color);
+    border-color: #3498db;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.theme-icon {
+    flex-shrink: 0;
+    stroke: var(--text-primary);
+}
+
+.theme-text {
+    font-size: 14px;
 }
 
 .settings-button {
@@ -1093,12 +1157,47 @@ input[type="text"] {
     font-style: italic;
     color: var(--text-secondary);
     margin-bottom: 12px;
+    position: relative;
 }
 
 .summary-text {
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.6;
     font-size: 14px;
+    display: inline;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+.summary-text.expanded {
+    display: block;
+    margin-top: 8px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    border-left: 3px solid #3498db;
+    font-style: normal;
+}
+
+.expand-summary-btn {
+    display: inline;
+    margin-left: 8px;
+    padding: 2px 10px;
+    background: transparent;
+    color: #3498db;
+    border: 1px solid #3498db;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    vertical-align: baseline;
+}
+
+.expand-summary-btn:hover {
+    background: #3498db;
+    color: white;
 }
 
 /* Inline Resources Display */
@@ -1349,6 +1448,11 @@ input[type="text"] {
     font-size: 14px;
 }
 
+.modal-footer .danger-button {
+    width: auto;
+    margin-right: auto;
+}
+
 @media (max-width: 768px) {
     .subjects-grid {
         grid-template-columns: 1fr;
@@ -1422,27 +1526,29 @@ input[type="text"] {
     background: var(--success-dark, #229954);
 }
 
-.sync-status {
+/* Sync Status in Settings Modal */
+.sync-status-section {
+    padding: 20px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.sync-status-display {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 13px;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.sync-icon-large {
+    font-size: 48px;
+    flex-shrink: 0;
     color: var(--text-secondary);
-    padding: 4px 10px;
-    background: var(--bg-secondary);
-    border-radius: 4px;
 }
 
-.sync-status.hidden {
-    display: none;
-}
-
-.sync-icon {
-    font-size: 16px;
-    animation: none;
-}
-
-.sync-status.syncing .sync-icon {
+.sync-icon-large.syncing {
     animation: spin 1s linear infinite;
 }
 
@@ -1455,12 +1561,31 @@ input[type="text"] {
     }
 }
 
-.sync-status.error {
-    color: var(--error-color, #e74c3c);
+.sync-info {
+    flex: 1;
 }
 
-.sync-status.success {
-    color: var(--success-color, #27ae60);
+.sync-message {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.sync-message.syncing {
+    color: #3498db;
+}
+
+.sync-message.error {
+    color: #e74c3c;
+}
+
+.sync-message.success {
+    color: #27ae60;
+}
+
+.sync-details {
+    font-size: 13px;
+    color: var(--text-secondary);
 }
 
 /* Auth Modal Styles */

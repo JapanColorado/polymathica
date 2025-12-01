@@ -39,10 +39,10 @@
         "linalg": {
           "name": "Linear Algebra",
           "prereq": [],
-          "coreq": [
-            "calc2"
+          "coreq": [],
+          "soft": [
+            "calc1"
           ],
-          "soft": [],
           "summary": "Study of vector spaces, linear transformations, and matrices essential for quantum mechanics, machine learning, computer graphics, and high-dimensional spaces. Key topics include matrices, determinants, vector spaces, eigenvalues and eigenvectors, linear transformations, orthogonality, and least squares."
         },
         "prob": {
@@ -74,7 +74,9 @@
             "calc3"
           ],
           "coreq": [],
-          "soft": [],
+          "soft": [
+            "linalg"
+          ],
           "summary": "Equations involving derivatives of functions of one variable that model change and dynamics in physics, biology, economics, and engineering. Key topics include first-order ODEs, second-order linear ODEs, systems of ODEs, phase portraits, stability analysis, and Laplace transforms."
         },
         "realanalysis": {
@@ -82,10 +84,10 @@
           "prereq": [
             "calc3"
           ],
-          "coreq": [
-            "odes"
+          "coreq": [],
+          "soft": [
+            "logic"
           ],
-          "soft": [],
           "summary": "Rigorous foundations of calculus understanding limits, continuity, differentiation, and integration with mathematical precision. Key topics include sequences, series, limits, continuity, differentiation, Riemann integration, uniform convergence, and metric spaces."
         },
         "complexanalysis": {
@@ -100,11 +102,10 @@
         "fourier": {
           "name": "Fourier Analysis",
           "prereq": [
-            "odes"
-          ],
-          "coreq": [
+            "odes",
             "complexanalysis"
           ],
+          "coreq": [],
           "soft": [],
           "summary": "Decomposing functions into frequency components essential for signal processing, PDEs, and quantum mechanics. Key topics include Fourier series, Fourier transform, convolution, frequency domain, and applications to PDEs and signal processing."
         },
@@ -123,19 +124,21 @@
           "prereq": [
             "odes"
           ],
-          "coreq": [
-            "pdes"
+          "coreq": [],
+          "soft": [
+            "linalg"
           ],
-          "soft": [],
           "summary": "Study of how systems evolve over time including chaos, stability, attractors, and bifurcations. Key topics include fixed points, stability analysis, bifurcations, chaos, Lyapunov exponents, limit cycles, and strange attractors."
         },
         "algebra": {
           "name": "Abstract Algebra (Group Theory)",
           "prereq": [
-            "realanalysis"
+            "logic"
           ],
           "coreq": [],
-          "soft": [],
+          "soft": [
+            "realanalysis"
+          ],
           "summary": "Study of symmetry and algebraic structures including groups, rings, and fields with their applications. Key topics include groups, subgroups, homomorphisms, cosets, normal subgroups, quotient groups, group actions, rings, and fields."
         },
         "topology": {
@@ -143,20 +146,20 @@
           "prereq": [
             "realanalysis"
           ],
-          "coreq": [
-            "algebra"
-          ],
+          "coreq": [],
           "soft": [],
           "summary": "Study of properties preserved under continuous deformation exploring shape without distance. Key topics include topological spaces, open and closed sets, continuity, compactness, connectedness, metric spaces, and homeomorphisms."
         },
         "numerical": {
           "name": "Numerical Methods",
           "prereq": [
-            "odes",
-            "linalg"
+            "linalg",
+            "calc3"
           ],
           "coreq": [],
-          "soft": [],
+          "soft": [
+            "odes"
+          ],
           "summary": "Algorithms for solving mathematical problems on computers including approximation, error analysis, and implementation. Key topics include root finding, interpolation, numerical integration, solving ODEs numerically, linear systems, and optimization algorithms."
         },
         "optimization": {
@@ -224,7 +227,7 @@
           "soft": [],
           "summary": "Energy, entropy, and the laws governing heat and work explaining why processes happen and fundamental limits of efficiency. Key topics include laws of thermodynamics, entropy, heat engines, Carnot cycle, thermodynamic potentials, and phase transitions."
         },
-        "em": {
+        "electromagnetism": {
           "name": "Electromagnetism",
           "prereq": [
             "calc3"
@@ -253,16 +256,16 @@
             "thermo",
             "prob"
           ],
-          "coreq": [
+          "coreq": [],
+          "soft": [
             "quantum"
           ],
-          "soft": [],
           "summary": "Bridge between microscopic and macroscopic physics showing how thermodynamics emerges from quantum mechanics and statistics. Key topics include microstates and macrostates, Boltzmann distribution, partition functions, entropy, ensembles, and phase transitions."
         },
         "relativity": {
           "name": "Relativity (Special & General)",
           "prereq": [
-            "em",
+            "electromagnetism",
             "classical"
           ],
           "coreq": [],
@@ -275,7 +278,9 @@
             "quantum"
           ],
           "coreq": [],
-          "soft": [],
+          "soft": [
+            "relativity"
+          ],
           "summary": "Fundamental particles and forces through the Standard Model explaining what everything is made of. Key topics include quarks, leptons, gauge bosons, Standard Model, Feynman diagrams, particle interactions, and conservation laws."
         },
         "condensed": {
@@ -293,7 +298,8 @@
           "prereq": [],
           "coreq": [],
           "soft": [
-            "em",
+            "classical",
+            "electromagnetism",
             "thermo",
             "quantum"
           ],
@@ -315,7 +321,9 @@
             "cellbio"
           ],
           "coreq": [],
-          "soft": [],
+          "soft": [
+            "thermo"
+          ],
           "summary": "Physical principles in biological systems from molecular machines to organism-level physics. Key topics include biomolecular structure, molecular motors, membrane biophysics, nerve impulses, biomechanics, and single-molecule techniques."
         }
       }
@@ -328,9 +336,7 @@
           "name": "General Chemistry",
           "prereq": [],
           "coreq": [],
-          "soft": [
-            "calc1"
-          ],
+          "soft": [],
           "summary": "Atomic structure, bonding, reactions, and stoichiometry as foundation for understanding matter and chemical processes. Key topics include atomic structure, periodic table, chemical bonding, stoichiometry, thermochemistry, equilibrium, acids and bases, and redox reactions."
         },
         "physchem": {
@@ -364,10 +370,10 @@
         "cellbio": {
           "name": "Cell Biology",
           "prereq": [],
-          "coreq": [
+          "coreq": [],
+          "soft": [
             "genchem"
           ],
-          "soft": [],
           "summary": "Structure and function of cells as the basic unit of life including how cells work, communicate, and reproduce. Key topics include cell structure, membranes, organelles, cell cycle, mitosis and meiosis, cellular respiration, photosynthesis, and cell signaling."
         },
         "molbio": {
@@ -384,10 +390,10 @@
           "prereq": [
             "molbio"
           ],
-          "coreq": [
+          "coreq": [],
+          "soft": [
             "biochem"
           ],
-          "soft": [],
           "summary": "Inheritance, variation, and gene function from Mendel to modern genomics. Key topics include Mendelian genetics, chromosomes, linkage, genetic mapping, population genetics, quantitative genetics, and mutations."
         },
         "evolution": {
@@ -396,7 +402,9 @@
             "genetics"
           ],
           "coreq": [],
-          "soft": [],
+          "soft": [
+            "prob"
+          ],
           "summary": "How life changes over time through natural selection, adaptation, and the history of life. Key topics include natural selection, adaptation, speciation, phylogenetics, molecular evolution, evo-devo, and evolutionary theory."
         },
         "ecology": {
@@ -405,7 +413,9 @@
             "evolution"
           ],
           "coreq": [],
-          "soft": [],
+          "soft": [
+            "calc2"
+          ],
           "summary": "Interactions between organisms and environment including populations, communities, and ecosystems. Key topics include population dynamics, community ecology, ecosystem ecology, food webs, biodiversity, conservation, and ecological modeling."
         },
         "neuro": {
@@ -414,7 +424,9 @@
             "cellbio"
           ],
           "coreq": [],
-          "soft": [],
+          "soft": [
+            "biochem"
+          ],
           "summary": "Brain, neurons, and nervous systems showing how neural circuits produce behavior and cognition. Key topics include neuron structure, action potentials, synapses, neural circuits, sensory systems, motor control, brain anatomy, and neuroplasticity."
         },
         "sysbio": {
@@ -456,7 +468,9 @@
             "cellbio"
           ],
           "coreq": [],
-          "soft": [],
+          "soft": [
+            "genchem"
+          ],
           "summary": "Bacteria, viruses, fungi, and other microorganisms exploring microbial life and disease. Key topics include bacterial structure, viral replication, microbial growth, pathogenesis, antimicrobials, and medical microbiology."
         },
         "immunology": {
@@ -465,7 +479,9 @@
             "cellbio"
           ],
           "coreq": [],
-          "soft": [],
+          "soft": [
+            "biochem"
+          ],
           "summary": "Immune system and defense against disease through innate and adaptive immunity. Key topics include innate immunity, adaptive immunity, antibodies, T cells, B cells, immune response, vaccines, and autoimmunity."
         }
       }
@@ -602,9 +618,7 @@
           "name": "Microeconomics",
           "prereq": [],
           "coreq": [],
-          "soft": [
-            "calc1"
-          ],
+          "soft": [],
           "summary": "Individual decision-making, markets, and incentives exploring supply, demand, and efficiency. Key topics include supply and demand, consumer theory, producer theory, market structures, game theory basics, market failures, and welfare economics."
         },
         "behavioral": {
@@ -694,7 +708,8 @@
           "prereq": [],
           "coreq": [],
           "soft": [
-            "optimization"
+            "optimization",
+            "prob"
           ],
           "summary": "Mathematical optimization for decision-making through linear programming and optimization in operations. Key topics include linear programming, integer programming, network optimization, queuing theory, simulation, and decision analysis."
         }
@@ -711,7 +726,7 @@
           "soft": [],
           "summary": "How the mind works exploring perception, memory, thinking, and decision-making. Key topics include perception, attention, memory, language, problem-solving, reasoning, decision-making, and cognitive biases."
         },
-        "jdm": {
+        "decisionmaking": {
           "name": "Judgment and Decision Making (Kahneman/Tversky)",
           "prereq": [],
           "coreq": [
@@ -760,10 +775,10 @@
         "philsci": {
           "name": "Philosophy of Science",
           "prereq": [],
-          "coreq": [
+          "coreq": [],
+          "soft": [
             "epistemology"
           ],
-          "soft": [],
           "summary": "Nature of science and scientific knowledge exploring what makes science work. Key topics include scientific method, induction, falsificationism, paradigms, scientific realism, explanation, causation, and laws of nature."
         },
         "ethics": {
@@ -796,10 +811,9 @@
         "philmind": {
           "name": "Philosophy of Mind",
           "prereq": [],
-          "coreq": [
-            "cogpsych"
-          ],
+          "coreq": [],
           "soft": [
+            "cogpsych",
             "neuro"
           ],
           "summary": "Nature of mind and consciousness exploring the mind-body problem and mental states. Key topics include dualism, materialism, functionalism, consciousness, qualia, intentionality, mental causation, and free will."
@@ -856,7 +870,7 @@
           "soft": [],
           "summary": "Comparing political systems across countries including institutions, regimes, and governance. Key topics include political systems, democratization, authoritarian regimes, institutions, political culture, and comparative methods."
         },
-        "ir": {
+        "internationalrelations": {
           "name": "International Relations",
           "prereq": [],
           "coreq": [],
@@ -895,10 +909,12 @@
           "name": "Social Movements",
           "prereq": [],
           "coreq": [],
-          "soft": [],
+          "soft": [
+            "sociology"
+          ],
           "summary": "Collective action for social change exploring how movements form, succeed, or fail. Key topics include resource mobilization, framing, political opportunity, collective action, movement strategies, and outcomes."
         },
-        "orgs": {
+        "organizations": {
           "name": "Organizations",
           "prereq": [],
           "coreq": [],
@@ -909,7 +925,9 @@
           "name": "Organizational Behavior",
           "prereq": [],
           "coreq": [],
-          "soft": [],
+          "soft": [
+            "cogpsych"
+          ],
           "summary": "Behavior in organizational settings including motivation, leadership, and group dynamics. Key topics include motivation, leadership, groups and teams, organizational culture, decision-making, conflict, and change management."
         }
       }
@@ -918,7 +936,7 @@
       "category": "health",
       "order": 10,
       "subjects": {
-        "epi": {
+        "epidemiology": {
           "name": "Epidemiology",
           "prereq": [
             "prob"
@@ -933,13 +951,15 @@
             "cellbio"
           ],
           "coreq": [],
-          "soft": [],
+          "soft": [
+            "biochem"
+          ],
           "summary": "Study of disease mechanisms exploring what goes wrong in disease. Key topics include cell injury, inflammation, neoplasia, immune disorders, infectious disease, and mechanisms of disease."
         },
         "pubhealth": {
           "name": "Public Health",
           "prereq": [
-            "epi"
+            "epidemiology"
           ],
           "coreq": [],
           "soft": [],
@@ -948,7 +968,7 @@
         "biosecurity": {
           "name": "Biosecurity & Pandemic Preparedness",
           "prereq": [
-            "epi",
+            "epidemiology",
             "pubhealth"
           ],
           "coreq": [],
@@ -1065,7 +1085,7 @@
           "name": "Forecasting & Prediction",
           "prereq": [
             "prob",
-            "jdm"
+            "decisionmaking"
           ],
           "coreq": [],
           "soft": [],
@@ -1106,7 +1126,7 @@
           "name": "Rationality (LessWrong canon)",
           "prereq": [
             "prob",
-            "jdm",
+            "decisionmaking",
             "decisiontheory"
           ],
           "coreq": [],
@@ -1162,7 +1182,10 @@
           "name": "Agronomy",
           "prereq": [],
           "coreq": [],
-          "soft": [],
+          "soft": [
+            "genchem",
+            "cellbio"
+          ],
           "summary": "Crop science and soil management for agriculture and food production. Key topics include crop physiology, soil science, pest management, crop breeding, sustainable agriculture, and precision agriculture."
         }
       }
