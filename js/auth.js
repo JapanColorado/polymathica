@@ -1,13 +1,11 @@
-// GitHub OAuth Authentication Handler
-// Manages user authentication and authorization
+// GitHub Personal Access Token Authentication Handler
+// Manages user authentication and authorization using GitHub PATs
 
 class GitHubAuth {
-    constructor(clientId, repoOwner) {
-        this.clientId = clientId;
+    constructor(repoOwner) {
         this.repoOwner = repoOwner;
         this.token = null;
         this.username = null;
-        this.authStateKey = 'github_auth_state';
         this.tokenKey = 'github_token';
         this.usernameKey = 'github_username';
 
@@ -37,63 +35,12 @@ class GitHubAuth {
         this.username = null;
         localStorage.removeItem(this.tokenKey);
         localStorage.removeItem(this.usernameKey);
-        localStorage.removeItem(this.authStateKey);
     }
 
-    // Initiate OAuth login flow
-    login() {
-        // Generate random state for CSRF protection
-        const state = this.generateRandomState();
-        localStorage.setItem(this.authStateKey, state);
-
-        // Redirect to GitHub OAuth authorize page
-        const authUrl = new URL('https://github.com/login/oauth/authorize');
-        authUrl.searchParams.set('client_id', this.clientId);
-        authUrl.searchParams.set('redirect_uri', this.getRedirectUri());
-        authUrl.searchParams.set('scope', 'public_repo'); // Need repo access to read/write
-        authUrl.searchParams.set('state', state);
-
-        window.location.href = authUrl.toString();
-    }
-
-    // Handle OAuth callback (called from callback.html)
-    async handleCallback(code, state) {
-        // Verify state to prevent CSRF
-        const savedState = localStorage.getItem(this.authStateKey);
-        if (state !== savedState) {
-            throw new Error('Invalid state parameter - possible CSRF attack');
-        }
-
-        // Clean up state
-        localStorage.removeItem(this.authStateKey);
-
-        // Exchange code for token using GitHub's web flow
-        // Note: For a pure client-side app, we use the implicit flow
-        // However, GitHub doesn't support implicit flow, so we need a workaround
-        // We'll use a CORS proxy or accept that users paste their token
-
-        // For now, we'll get the token from the URL hash (if using device flow)
-        // or ask user to create a Personal Access Token
-        return code;
-    }
-
-    // Set token manually (for Personal Access Token flow)
+    // Set token manually (Personal Access Token flow)
     setToken(token) {
         this.token = token;
         this.saveAuthData();
-    }
-
-    // Get redirect URI for OAuth
-    getRedirectUri() {
-        const baseUrl = window.location.origin + window.location.pathname.replace(/\/$/, '');
-        return `${baseUrl}/callback.html`;
-    }
-
-    // Generate random state for CSRF protection
-    generateRandomState() {
-        const array = new Uint8Array(32);
-        crypto.getRandomValues(array);
-        return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
     }
 
     // Check if user is authenticated
@@ -175,6 +122,6 @@ class GitHubAuth {
 // Initialize auth system
 let githubAuth;
 if (typeof CONFIG !== 'undefined') {
-    githubAuth = new GitHubAuth(CONFIG.github.clientId, CONFIG.github.repoOwner);
+    githubAuth = new GitHubAuth(CONFIG.github.repoOwner);
     window.githubAuth = githubAuth;
 }

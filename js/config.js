@@ -2,9 +2,8 @@
 // This file contains public configuration values
 
 const CONFIG = {
-    // GitHub OAuth App credentials
+    // GitHub repository settings
     github: {
-        clientId: 'Ov23limAHgxWKUF6JeG8',
         repoOwner: 'JapanColorado',
         repoName: 'polymathica',
         branch: 'main'

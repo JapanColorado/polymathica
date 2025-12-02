@@ -558,6 +558,7 @@ async function updateViewMode() {
         viewMode = CONFIG.app.viewModes.PUBLIC;
     }
     updateSettingsButtonVisibility();
+    updateCreateSubjectButtonState();
     render();
 }
 
@@ -599,6 +600,24 @@ function updateSettingsButtonVisibility() {
     const settingsButton = document.getElementById('settingsButton');
     if (settingsButton) {
         settingsButton.style.display = viewMode === 'public' ? 'none' : 'block';
+    }
+}
+
+/**
+ * Update create subject button state based on view mode
+ */
+function updateCreateSubjectButtonState() {
+    const createSubjectBtn = document.getElementById('catalogCreateSubjectBtn');
+    if (createSubjectBtn) {
+        if (viewMode === 'public') {
+            createSubjectBtn.disabled = true;
+            createSubjectBtn.style.opacity = '0.5';
+            createSubjectBtn.style.cursor = 'not-allowed';
+        } else {
+            createSubjectBtn.disabled = false;
+            createSubjectBtn.style.opacity = '1';
+            createSubjectBtn.style.cursor = 'pointer';
+        }
     }
 }
 
@@ -920,6 +939,11 @@ async function resetAllData() {
  * Open create subject modal
  */
 function openCreateSubjectModal() {
+    if (viewMode === 'public') {
+        console.warn('[Create Subject] Not available in public mode');
+        return;
+    }
+
     document.getElementById('createSubjectModal').classList.add('active');
 
     // Populate category dropdown with existing tiers

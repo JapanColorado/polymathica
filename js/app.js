@@ -150,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const loaded = await loadPublicDataFromGitHub();
                 console.log('[Init] Public data loaded:', loaded);
                 updateSettingsButtonVisibility();
+                updateCreateSubjectButtonState();
                 // Always render, even if loading failed (will show empty state)
                 render();
             })();
