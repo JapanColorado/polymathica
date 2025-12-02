@@ -155,7 +155,7 @@ function getSubjectProgress(id) {
  */
 function setSubjectProgress(id, progress) {
     subjectProgress[id] = progress;
-    saveProgress();
+    markDataChanged();
     render();
 }
 
@@ -199,7 +199,7 @@ function cycleProjectProgress(subjectId, projectIndex, event) {
     };
 
     project.status = statusCycle[project.status] || 'not-started';
-    saveSubjects();
+    markDataChanged();
     render();
 }
 

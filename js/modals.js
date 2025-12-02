@@ -107,12 +107,8 @@ function saveSubjectDetail() {
         subject.goal = null;
     }
 
-    saveSubjects();
-
-    // If authenticated, sync to GitHub
-    if (window.githubAuth && githubAuth.isAuthenticated()) {
-        saveDataToGitHub();
-    }
+    // Mark data as changed - will auto-sync to GitHub
+    markDataChanged();
 
     closeSubjectDetail();
     render();
@@ -162,14 +158,8 @@ function deleteCustomSubject() {
     // Remove progress data
     delete subjectProgress[currentEditingSubject];
 
-    // Save changes
-    saveSubjects();
-    saveProgress();
-
-    // If authenticated, sync to GitHub
-    if (window.githubAuth && githubAuth.isAuthenticated()) {
-        saveDataToGitHub();
-    }
+    // Mark data as changed - will auto-sync to GitHub
+    markDataChanged();
 
     // Close modal and re-render
     closeSubjectDetail();
@@ -227,7 +217,7 @@ function saveResource() {
         subject.resources = subject.resources || [];
         subject.resources.push(resource);
         renderResourcesList(subject.resources, 'resourcesList', 'subject');
-        saveSubjects();
+        markDataChanged();
     } else if (currentResourceContext === 'project' && currentEditingProject) {
         if (currentEditingProject === 'new') {
             // Adding resource to a new (unsaved) project
@@ -242,7 +232,7 @@ function saveResource() {
             project.resources = project.resources || [];
             project.resources.push(resource);
             renderResourcesList(project.resources, 'projectResourcesList', 'project');
-            saveSubjects();
+            markDataChanged();
         }
     }
 
@@ -261,7 +251,7 @@ function removeResource(index, type) {
         if (!subject || !subject.resources) return;
         subject.resources.splice(index, 1);
         renderResourcesList(subject.resources, 'resourcesList', 'subject');
-        saveSubjects();
+        markDataChanged();
     } else if (type === 'project' && currentEditingProject) {
         if (currentEditingProject === 'new') {
             // Removing from temporary resources
@@ -274,7 +264,7 @@ function removeResource(index, type) {
             if (!subject || !subject.projects || !subject.projects[projectIndex] || !subject.projects[projectIndex].resources) return;
             subject.projects[projectIndex].resources.splice(index, 1);
             renderResourcesList(subject.projects[projectIndex].resources, 'projectResourcesList', 'project');
-            saveSubjects();
+            markDataChanged();
         }
     }
 }
@@ -409,7 +399,7 @@ function removeProject(projectIndex, event) {
     if (!subject || !subject.projects) return;
     subject.projects.splice(projectIndex, 1);
     renderProjectsList(subject.projects);
-    saveSubjects();
+    markDataChanged();
     render();
 }
 
@@ -457,7 +447,7 @@ function saveProjectDetail() {
         project.goal = goal;
     }
 
-    saveSubjects();
+    markDataChanged();
     closeProjectDetail();
     renderProjectsList(subject.projects);
     render();
@@ -473,7 +463,7 @@ function deleteCurrentProject() {
     const subject = findSubject(currentEditingSubject);
     if (!subject || !subject.projects) return;
     subject.projects.splice(projectIndex, 1);
-    saveSubjects();
+    markDataChanged();
     closeProjectDetail();
     renderProjectsList(subject.projects);
     render();
@@ -1053,14 +1043,8 @@ function saveNewSubject() {
     // Initialize progress as empty
     subjectProgress[id] = 'empty';
 
-    // Save
-    saveSubjects();
-    saveProgress();
-
-    // If authenticated, sync to GitHub
-    if (window.githubAuth && githubAuth.isAuthenticated()) {
-        saveDataToGitHub();
-    }
+    // Mark data as changed - will auto-sync to GitHub
+    markDataChanged();
 
     // Re-render
     render();

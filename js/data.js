@@ -262,6 +262,23 @@ async function loadDataFromGitHub() {
 // ==========================================
 
 /**
+ * Mark that data has changed - saves locally and queues for auto-sync
+ * This should be called instead of saveDataToGitHub() for most data changes
+ * to avoid creating too many commits
+ */
+function markDataChanged() {
+    // Always save to localStorage immediately
+    saveSubjects();
+    saveProgress();
+
+    // Mark storage as dirty so auto-sync will handle GitHub sync
+    if (window.githubStorage && window.githubAuth && githubAuth.isAuthenticated()) {
+        githubStorage.markDirty();
+        console.log('[App] Data marked as changed, will sync automatically');
+    }
+}
+
+/**
  * Save data to GitHub repository (requires authentication)
  * @returns {Promise<boolean>} True if successful, false otherwise
  */

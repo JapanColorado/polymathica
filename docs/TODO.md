@@ -1,14 +1,14 @@
 # TODO
 
-
 - Write good readme (short, to the point)
 - Simplify subject catalog
   - eg. get rid of (continue to fluency) in Japanese subject
-- Make add subject unclickable in public mode
-- Only sync every 5 minutes when changes are made
 
 ## Done
 
+- Only sync every 5 minutes when changes are made
+
+- Make add subject unclickable in public mode
 - Modularize codebase
 - Hide summaries on dashboard subject cards
 - Fix theme toggle and nav on mobile view
