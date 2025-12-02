@@ -87,7 +87,7 @@ class GitHubStorage {
     }
 
     // Save user data to GitHub
-    async saveUserData(data) {
+    async saveUserData(data, preserveTimestamp = false) {
         if (!this.auth || !this.auth.isAuthenticated()) {
             throw new Error('Authentication required to save data');
         }
@@ -95,8 +95,10 @@ class GitHubStorage {
         try {
             console.log('[Storage] Saving user data to GitHub...');
 
-            // Add metadata
-            data.lastModified = new Date().toISOString();
+            // Add metadata (update timestamp only if not preserving)
+            if (!preserveTimestamp) {
+                data.lastModified = new Date().toISOString();
+            }
             data.version = data.version || '2.0';
 
             // Encode content as base64
@@ -160,7 +162,18 @@ class GitHubStorage {
             if (this.hasUnsavedChanges && localData) {
                 console.log('[Storage] Merging local changes...');
                 const mergedData = this.mergeData(remoteData, localData);
-                await this.saveUserData(mergedData);
+
+                // Check if data has actually changed (excluding timestamp)
+                if (this.hasDataChanged(remoteData, mergedData)) {
+                    console.log('[Storage] Data has changed, saving...');
+                    await this.saveUserData(mergedData);
+                } else {
+                    console.log('[Storage] No data changes detected, skipping save');
+                    this.hasUnsavedChanges = false;
+                }
+            } else {
+                // No local changes, just mark as synced
+                this.hasUnsavedChanges = false;
             }
 
             console.log('[Storage] Sync complete');
@@ -187,6 +200,26 @@ class GitHubStorage {
         }
 
         // TODO: Implement smarter merging (per-subject comparison)
+    }
+
+    // Check if data has actually changed (excluding timestamp fields)
+    hasDataChanged(oldData, newData) {
+        // Create copies without timestamp fields for comparison
+        const stripTimestamps = (data) => {
+            const copy = { ...data };
+            delete copy.lastModified;
+            delete copy.version; // version shouldn't trigger a change either
+            return copy;
+        };
+
+        const oldStripped = stripTimestamps(oldData);
+        const newStripped = stripTimestamps(newData);
+
+        // Compare JSON strings (simple but effective for our use case)
+        const oldJson = JSON.stringify(oldStripped, Object.keys(oldStripped).sort());
+        const newJson = JSON.stringify(newStripped, Object.keys(newStripped).sort());
+
+        return oldJson !== newJson;
     }
 
     // Start auto-sync timer
