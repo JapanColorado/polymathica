@@ -1,6 +1,6 @@
 {
   "schema": "3.0",
-  "lastModified": "2025-12-05T04:56:49.457Z",
+  "lastModified": "2025-12-06T19:04:21.794Z",
   "progress": {
     "calc1": "complete",
     "calc2": "partial",
@@ -108,7 +108,7 @@
       ]
     },
     "japanese": {
-      "goal": "Pass the JLPT N1."
+      "goal": "Pass the JLPT N2."
     },
     "writing": {
       "resources": [
