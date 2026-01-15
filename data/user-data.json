@@ -1,54 +1,85 @@
 {
   "schema": "3.0",
-  "lastModified": "2025-12-07T23:55:39.415Z",
+  "lastModified": "2026-01-15T16:59:40.467Z",
   "progress": {
     "calc1": "complete",
     "calc2": "partial",
     "japanese": "partial",
-    "electromagnetism": "partial",
+    "electromagnetism": "complete",
     "digital-signals-theory": "empty",
     "linalg": "empty",
-    "optics": "partial",
+    "optics": "complete",
     "naturalism": "empty"
   },
   "overlays": {
     "calc2": {
       "goal": "Memorize essential integration techniques, polar coordinates, and series/sequences/convergence-divergence tests.",
-      "resources": [
+      "projects": [
         {
-          "type": "link",
-          "value": "Active Calculus Textbook",
-          "url": "https://activecalculus.org/single2e/frontmatter.html"
+          "id": "calc2-project-1768496063251",
+          "name": "Memorize key formulas",
+          "goal": "Memorize important integration formulas through Anki",
+          "resources": [],
+          "status": "in-progress"
+        },
+        {
+          "id": "calc2-project-1768496114025",
+          "name": "Spaced Calculus problem practice",
+          "goal": "Using Anki to complete Calculus problems at spaced intervals",
+          "resources": [],
+          "status": "in-progress"
         }
       ]
     },
     "calc3": {
-      "resources": [
+      "projects": [
         {
-          "type": "link",
-          "value": "Active Multivariable Calculus",
-          "url": "https://activecalculus.org/multi/C-9.html"
+          "id": "calc3-project-1768496164695",
+          "name": "Take MATH 253",
+          "goal": "Learn the basics of Calc III",
+          "resources": [],
+          "status": "not-started"
+        },
+        {
+          "id": "calc3-project-1768496199827",
+          "name": "Calc III Anki deck",
+          "goal": "Practice and memorize calculus III at increasing review intervals with Anki",
+          "resources": [],
+          "status": "in-progress"
         }
       ]
     },
     "electromagnetism": {
-      "goal": "Understand how electromagnetism works.",
+      "goal": "Understand the basics of electromagnetism.",
       "projects": [
         {
-          "id": "electromagnetism-project-1764713595261",
-          "name": "Write a series of explainers for PHYS 132",
-          "goal": "Have a public shareable to showcase and help others understand electromagnetism",
+          "id": "electromagnetism-project-1768495933135",
+          "name": "Take PHYS 132 and 132L",
+          "goal": "Structured electromagnetism learning",
           "resources": [],
-          "status": "not-started"
+          "status": "completed"
         }
       ]
     },
     "optics": {
+      "goal": "Understand the basics of how light works.",
       "projects": [
         {
           "id": "optics-project-1765049071745",
-          "name": "Write a series of explainers for PHYS 132",
-          "goal": "Explain the basics of classical optics",
+          "name": "Take PHYS 132 and 132L",
+          "goal": "Structured learning for the basics of classical optics",
+          "resources": [],
+          "status": "completed"
+        }
+      ]
+    },
+    "genchem": {
+      "goal": "Understand chemistry, esp. chemical reactions, elements, pH, etc.",
+      "projects": [
+        {
+          "id": "genchem-project-1768496273540",
+          "name": "Take CHEM 131",
+          "goal": "Learn the basics of general chemistry",
           "resources": [],
           "status": "not-started"
         }
