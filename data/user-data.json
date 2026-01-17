@@ -1,6 +1,6 @@
 {
   "schema": "3.0",
-  "lastModified": "2026-01-17T20:20:51.535Z",
+  "lastModified": "2026-01-17T20:22:52.514Z",
   "progress": {
     "calc1": "complete",
     "calc2": "partial",
@@ -9,7 +9,8 @@
     "digital-signals-theory": "empty",
     "linalg": "empty",
     "optics": "complete",
-    "naturalism": "empty"
+    "naturalism": "empty",
+    "mnemonics": "empty"
   },
   "overlays": {
     "calc2": {
@@ -260,6 +261,17 @@
           "url": "https://www.loganstrohl.com/introductory-materials"
         }
       ],
+      "projects": []
+    },
+    "mnemonics": {
+      "name": "Mnemonics",
+      "tier": "Interdisciplinary",
+      "prereq": [],
+      "coreq": [],
+      "soft": [],
+      "summary": "Mnemonics is the study and practice of memory enhancement techniques that encode information to make it easier to recall.",
+      "goal": null,
+      "resources": [],
       "projects": []
     }
   },
