@@ -1,6 +1,6 @@
 {
   "schema": "3.0",
-  "lastModified": "2026-01-17T20:35:25.713Z",
+  "lastModified": "2026-01-17T20:45:44.630Z",
   "progress": {
     "calc1": "complete",
     "calc2": "partial",
@@ -13,6 +13,31 @@
     "mnemonics": "empty"
   },
   "overlays": {
+    "calc1": {
+      "projects": [
+        {
+          "id": "calc1-project-1768682575762",
+          "name": "Watch 3B1B Calculus videos",
+          "goal": "Build a geometric intuition for calculus",
+          "resources": [],
+          "status": "completed"
+        },
+        {
+          "id": "calc1-project-1768682601896",
+          "name": "Take MATH 151",
+          "goal": "Build basic calculus competence",
+          "resources": [],
+          "status": "completed"
+        },
+        {
+          "id": "calc1-project-1768682653677",
+          "name": "Work through Calculus Anki decks",
+          "goal": "Memorize key formulas and consistently practice Calculus problems",
+          "resources": [],
+          "status": "in-progress"
+        }
+      ]
+    },
     "calc2": {
       "goal": "Memorize essential integration techniques, polar coordinates, and series/sequences/convergence-divergence tests.",
       "projects": [
@@ -52,7 +77,7 @@
       ]
     },
     "linalg": {
-      "goal": "Be proficient in linear algebra so that I can understand ML and QM.",
+      "goal": "Be proficient in computational linear algebra so that I can understand ML and QM.",
       "projects": [
         {
           "id": "linalg-project-1768681521512",
