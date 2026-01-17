@@ -1,6 +1,6 @@
 {
   "schema": "3.0",
-  "lastModified": "2026-01-17T20:22:52.514Z",
+  "lastModified": "2026-01-17T20:26:50.850Z",
   "progress": {
     "calc1": "complete",
     "calc2": "partial",
@@ -47,6 +47,42 @@
           "goal": "Practice and memorize calculus III at increasing review intervals with Anki",
           "resources": [],
           "status": "in-progress"
+        }
+      ]
+    },
+    "linalg": {
+      "projects": [
+        {
+          "id": "linalg-project-1768681521512",
+          "name": "Complete MIT OCW 18.06",
+          "goal": "Become proficient in linear algebra",
+          "resources": [
+            {
+              "type": "link",
+              "value": "Linear Algebra Course",
+              "url": "https://ocw.mit.edu/courses/18-06sc-linear-algebra-fall-2011/"
+            },
+            {
+              "type": "link",
+              "value": "18.06 Addendum",
+              "url": "https://ocw.mit.edu/courses/res-18-010-a-2020-vision-of-linear-algebra-spring-2020/"
+            }
+          ],
+          "status": "not-started"
+        },
+        {
+          "id": "linalg-project-1768681563279",
+          "name": "Watch 3B1B Linear Algebra series",
+          "goal": "Gain a geometric intuition for the basics of linear algebra",
+          "resources": [],
+          "status": "not-started"
+        },
+        {
+          "id": "linalg-project-1768681606989",
+          "name": "Make an Anki deck",
+          "goal": "Memorize the core concepts of linear algebra so that I never have to relearn it again",
+          "resources": [],
+          "status": "not-started"
         }
       ]
     },
@@ -271,7 +307,13 @@
       "soft": [],
       "summary": "Mnemonics is the study and practice of memory enhancement techniques that encode information to make it easier to recall.",
       "goal": null,
-      "resources": [],
+      "resources": [
+        {
+          "type": "link",
+          "value": "Intro Course",
+          "url": "https://artofmemory.com/blog/free-memory-course/"
+        }
+      ],
       "projects": []
     }
   },
