@@ -1,13 +1,13 @@
 {
   "schema": "3.0",
-  "lastModified": "2026-01-17T20:26:50.850Z",
+  "lastModified": "2026-01-17T20:28:03.123Z",
   "progress": {
     "calc1": "complete",
     "calc2": "partial",
     "japanese": "partial",
     "electromagnetism": "complete",
     "digital-signals-theory": "empty",
-    "linalg": "empty",
+    "linalg": "partial",
     "optics": "complete",
     "naturalism": "empty",
     "mnemonics": "empty"
@@ -51,6 +51,7 @@
       ]
     },
     "linalg": {
+      "goal": "Be proficient in linear algebra so that I can understand ML and QM.",
       "projects": [
         {
           "id": "linalg-project-1768681521512",
@@ -68,21 +69,21 @@
               "url": "https://ocw.mit.edu/courses/res-18-010-a-2020-vision-of-linear-algebra-spring-2020/"
             }
           ],
-          "status": "not-started"
+          "status": "in-progress"
         },
         {
           "id": "linalg-project-1768681563279",
           "name": "Watch 3B1B Linear Algebra series",
           "goal": "Gain a geometric intuition for the basics of linear algebra",
           "resources": [],
-          "status": "not-started"
+          "status": "completed"
         },
         {
           "id": "linalg-project-1768681606989",
           "name": "Make an Anki deck",
           "goal": "Memorize the core concepts of linear algebra so that I never have to relearn it again",
           "resources": [],
-          "status": "not-started"
+          "status": "in-progress"
         }
       ]
     },
@@ -205,23 +206,7 @@
       ]
     },
     "japanese": {
-      "goal": "Become fluent in Japanese.",
-      "resources": [
-        {
-          "type": "link",
-          "value": "Anki - Vocab Deck",
-          "url": "https://tatsumoto-ren.github.io/blog/ankidrone-essentials.html"
-        },
-        {
-          "type": "link",
-          "value": "Anki - Grammar Deck",
-          "url": "https://ankiweb.net/shared/info/1013111837"
-        },
-        {
-          "type": "text",
-          "value": "Anki - Mining Deck"
-        }
-      ]
+      "goal": "Become fluent in Japanese."
     },
     "writing": {
       "resources": [
