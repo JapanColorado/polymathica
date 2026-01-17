@@ -1,6 +1,6 @@
 {
   "schema": "3.0",
-  "lastModified": "2026-01-17T20:28:03.123Z",
+  "lastModified": "2026-01-17T20:35:08.074Z",
   "progress": {
     "calc1": "complete",
     "calc2": "partial",
@@ -33,6 +33,7 @@
       ]
     },
     "calc3": {
+      "goal": "Become proficient in vector and multivariate calculus so that I can understand higher math and sciences.",
       "projects": [
         {
           "id": "calc3-project-1768496164695",
@@ -111,6 +112,17 @@
         }
       ]
     },
+    "quantum": {
+      "projects": [
+        {
+          "id": "quantum-project-1768681947725",
+          "name": "Take PHYS 231 - Modern Physics",
+          "goal": "Learn the basics of QM including the 3D Schrodinger equation for the hydrogen atom.",
+          "resources": [],
+          "status": "not-started"
+        }
+      ]
+    },
     "genchem": {
       "goal": "Understand chemistry, esp. chemical reactions, elements, pH, etc.",
       "projects": [
@@ -118,6 +130,13 @@
           "id": "genchem-project-1768496273540",
           "name": "Take CHEM 131",
           "goal": "Learn the basics of general chemistry",
+          "resources": [],
+          "status": "not-started"
+        },
+        {
+          "id": "genchem-project-1768681781966",
+          "name": "Take CHEM 131L",
+          "goal": "Gain experimental chemistry exposure and capability.",
           "resources": [],
           "status": "not-started"
         }
