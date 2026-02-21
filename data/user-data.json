@@ -1,16 +1,19 @@
 {
   "schema": "3.0",
-  "lastModified": "2026-01-17T20:45:44.630Z",
+  "lastModified": "2026-02-21T21:09:09.458Z",
   "progress": {
     "calc1": "complete",
     "calc2": "partial",
     "japanese": "partial",
     "electromagnetism": "complete",
     "digital-signals-theory": "empty",
-    "linalg": "partial",
+    "linalg": "empty",
     "optics": "complete",
     "naturalism": "empty",
-    "mnemonics": "empty"
+    "mnemonics": "empty",
+    "genchem": "partial",
+    "cellbio": "partial",
+    "calc3": "partial"
   },
   "overlays": {
     "calc1": {
@@ -65,7 +68,7 @@
           "name": "Take MATH 253",
           "goal": "Learn the basics of Calc III",
           "resources": [],
-          "status": "not-started"
+          "status": "in-progress"
         },
         {
           "id": "calc3-project-1768496199827",
@@ -156,14 +159,14 @@
           "name": "Take CHEM 131",
           "goal": "Learn the basics of general chemistry",
           "resources": [],
-          "status": "not-started"
+          "status": "in-progress"
         },
         {
           "id": "genchem-project-1768681781966",
           "name": "Take CHEM 131L",
           "goal": "Gain experimental chemistry exposure and capability.",
           "resources": [],
-          "status": "not-started"
+          "status": "in-progress"
         }
       ]
     },
