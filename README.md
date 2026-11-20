@@ -26,7 +26,7 @@ Copy the token immediately.
 
 **3. Sign In & Configure**
 Visit your Pages URL → Sign In → Paste token
-Update [config.js](config.js) if needed: `repoOwner` and `repoName` fields
+Update [js/config.js](js/config.js) if needed: `repoOwner` and `repoName` fields
 
 ## Creating Your Own Tracker
 
@@ -41,11 +41,11 @@ git remote set-url origin https://github.com/YOUR-USERNAME/my-polymathica.git
 git push -u origin main
 ```
 
-**Customize Catalog**: Edit [data/subjects.js](data/subjects.js) to add/remove subjects
+**Customize Catalog**: Edit [data/catalog.json](data/catalog.json) to add/remove subjects
 
 ## Renaming Repository
 
-Rename on GitHub → Update `config.js` → Commit/push → Re-authenticate on new URL
+Rename on GitHub → Update `js/config.js` → Commit/push → Re-authenticate on new URL
 
 ## Data & Privacy
 
@@ -92,9 +92,13 @@ Rename on GitHub → Update `config.js` → Commit/push → Re-authenticate on n
 
 **Use without GitHub?** Yes, but only syncs on reconnect.
 
+## How this was built
+
+Built with [Claude Code](https://claude.com/claude-code).
+
 ## License
 
-MIT License
+[MIT](LICENSE)
 
 ---
 
